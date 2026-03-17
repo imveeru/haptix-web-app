@@ -1,0 +1,65 @@
+{
+  "version": "1.0",
+  "entries": [
+    {
+      "videoId": "video-001",
+      "youtubeId": "dQw4w9WgXcQ",
+      "hapticsFile": "/src/haptics/video-001.json"
+    },
+    {
+      "videoId": "video-002",
+      "youtubeId": "jNQXAC9IVRw",
+      "hapticsFile": "/src/haptics/video-002.json"
+    },
+    {
+      "videoId": "video-003",
+      "youtubeId": "zSWdZVtXT7E",
+      "hapticsFile": "/src/haptics/video-003.json"
+    },
+    {
+      "videoId": "video-004",
+      "youtubeId": "Way9Dexny3w",
+      "hapticsFile": "/src/haptics/video-004.json"
+    },
+    {
+      "videoId": "video-005",
+      "youtubeId": "TcMBFSGVi1c",
+      "hapticsFile": "/src/haptics/video-005.json"
+    },
+    {
+      "videoId": "video-006",
+      "youtubeId": "mqqft2x_Aa4",
+      "hapticsFile": "/src/haptics/video-006.json"
+    },
+    {
+      "videoId": "video-007",
+      "youtubeId": "giXco2jaZ_4",
+      "hapticsFile": "/src/haptics/video-007.json"
+    },
+    {
+      "videoId": "video-008",
+      "youtubeId": "hEJnMQG9ev8",
+      "hapticsFile": "/src/haptics/video-008.json"
+    },
+    {
+      "videoId": "video-009",
+      "youtubeId": "rt-2cxAiPJk",
+      "hapticsFile": "/src/haptics/video-009.json"
+    },
+    {
+      "videoId": "video-010",
+      "youtubeId": "YoHD9XEInc0",
+      "hapticsFile": "/src/haptics/video-010.json"
+    },
+    {
+      "videoId": "video-011",
+      "youtubeId": "73_1biulkYk",
+      "hapticsFile": "/src/haptics/video-011.json"
+    },
+    {
+      "videoId": "video-012",
+      "youtubeId": "4rgYUipGJNo",
+      "hapticsFile": "/src/haptics/video-012.json"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Haptix</title>
+    
+    <!-- PWA / display -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Haptix">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+    
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/src/styles/tokens.css" />
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <link rel="stylesheet" href="/src/styles/components.css" />
+    <link rel="stylesheet" href="/src/styles/pages/home.css" />
+    <link rel="stylesheet" href="/src/styles/pages/player.css" />
+    <link rel="stylesheet" href="/src/styles/pages/feedback.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <div id="app" class="app-root">
+      <main id="main-content" class="page-container"></main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

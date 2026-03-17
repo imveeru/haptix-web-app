@@ -1,0 +1,189 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "author": "Haptix Generator",
+    "description": "Mock pattern for Never Gonna Give You Up"
+  },
+  "events": [
+    {
+      "time": 5,
+      "duration": 363,
+      "intensity": 0.99,
+      "type": "continuous"
+    },
+    {
+      "time": 10,
+      "duration": 296,
+      "intensity": 0.28,
+      "type": "continuous"
+    },
+    {
+      "time": 15,
+      "duration": 515,
+      "intensity": 0.81,
+      "type": "transient"
+    },
+    {
+      "time": 20,
+      "duration": 298,
+      "intensity": 0.88,
+      "type": "transient"
+    },
+    {
+      "time": 25,
+      "duration": 272,
+      "intensity": 0.77,
+      "type": "continuous"
+    },
+    {
+      "time": 30,
+      "duration": 560,
+      "intensity": 0.62,
+      "type": "continuous"
+    },
+    {
+      "time": 35,
+      "duration": 470,
+      "intensity": 0.93,
+      "type": "transient"
+    },
+    {
+      "time": 40,
+      "duration": 368,
+      "intensity": 0.03,
+      "type": "continuous"
+    },
+    {
+      "time": 45,
+      "duration": 333,
+      "intensity": 0.2,
+      "type": "continuous"
+    },
+    {
+      "time": 50,
+      "duration": 191,
+      "intensity": 0.4,
+      "type": "continuous"
+    },
+    {
+      "time": 55,
+      "duration": 359,
+      "intensity": 0.28,
+      "type": "continuous"
+    },
+    {
+      "time": 60,
+      "duration": 533,
+      "intensity": 0.27,
+      "type": "continuous"
+    },
+    {
+      "time": 65,
+      "duration": 469,
+      "intensity": 0.66,
+      "type": "continuous"
+    },
+    {
+      "time": 70,
+      "duration": 578,
+      "intensity": 0.33,
+      "type": "transient"
+    },
+    {
+      "time": 75,
+      "duration": 259,
+      "intensity": 0.3,
+      "type": "transient"
+    },
+    {
+      "time": 80,
+      "duration": 265,
+      "intensity": 0.13,
+      "type": "continuous"
+    },
+    {
+      "time": 85,
+      "duration": 211,
+      "intensity": 0.75,
+      "type": "transient"
+    },
+    {
+      "time": 90,
+      "duration": 382,
+      "intensity": 0.89,
+      "type": "transient"
+    },
+    {
+      "time": 95,
+      "duration": 583,
+      "intensity": 0.36,
+      "type": "continuous"
+    },
+    {
+      "time": 100,
+      "duration": 110,
+      "intensity": 0.99,
+      "type": "continuous"
+    },
+    {
+      "time": 105,
+      "duration": 266,
+      "intensity": 0.88,
+      "type": "continuous"
+    },
+    {
+      "time": 110,
+      "duration": 169,
+      "intensity": 0.09,
+      "type": "continuous"
+    },
+    {
+      "time": 115,
+      "duration": 340,
+      "intensity": 0.83,
+      "type": "transient"
+    },
+    {
+      "time": 120,
+      "duration": 551,
+      "intensity": 0.63,
+      "type": "continuous"
+    },
+    {
+      "time": 125,
+      "duration": 593,
+      "intensity": 0.87,
+      "type": "continuous"
+    },
+    {
+      "time": 130,
+      "duration": 286,
+      "intensity": 0.52,
+      "type": "continuous"
+    },
+    {
+      "time": 135,
+      "duration": 128,
+      "intensity": 0.55,
+      "type": "transient"
+    },
+    {
+      "time": 140,
+      "duration": 527,
+      "intensity": 0.04,
+      "type": "continuous"
+    },
+    {
+      "time": 145,
+      "duration": 583,
+      "intensity": 0.83,
+      "type": "transient"
+    },
+    {
+      "time": 150,
+      "duration": 197,
+      "intensity": 0.18,
+      "type": "continuous"
+    }
+  ]
+}

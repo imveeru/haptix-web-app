@@ -1,0 +1,110 @@
+[
+  {
+    "id": "video-001",
+    "youtubeId": "dQw4w9WgXcQ",
+    "title": "Never Gonna Give You Up",
+    "artist": "Rick Astley",
+    "duration": 213,
+    "thumbnailUrl": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+    "category": "Music"
+  },
+  {
+    "id": "video-002",
+    "youtubeId": "jNQXAC9IVRw",
+    "title": "Me at the zoo",
+    "artist": "jawed",
+    "duration": 19,
+    "thumbnailUrl": "https://img.youtube.com/vi/jNQXAC9IVRw/hqdefault.jpg",
+    "category": "Other"
+  },
+  {
+    "id": "video-003",
+    "youtubeId": "zSWdZVtXT7E",
+    "title": "Interstellar Official Trailer",
+    "artist": "Paramount Pictures",
+    "duration": 152,
+    "thumbnailUrl": "https://img.youtube.com/vi/zSWdZVtXT7E/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-004",
+    "youtubeId": "Way9Dexny3w",
+    "title": "Dune: Part Two Official Trailer",
+    "artist": "Warner Bros. Pictures",
+    "duration": 182,
+    "thumbnailUrl": "https://img.youtube.com/vi/Way9Dexny3w/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-005",
+    "youtubeId": "TcMBFSGVi1c",
+    "title": "Avengers: Endgame Official Trailer",
+    "artist": "Marvel Entertainment",
+    "duration": 146,
+    "thumbnailUrl": "https://img.youtube.com/vi/TcMBFSGVi1c/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-006",
+    "youtubeId": "mqqft2x_Aa4",
+    "title": "The Batman Trailer",
+    "artist": "Warner Bros. Pictures",
+    "duration": 158,
+    "thumbnailUrl": "https://img.youtube.com/vi/mqqft2x_Aa4/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-007",
+    "youtubeId": "giXco2jaZ_4",
+    "title": "Top Gun: Maverick Official Trailer",
+    "artist": "Paramount Pictures",
+    "duration": 132,
+    "thumbnailUrl": "https://img.youtube.com/vi/giXco2jaZ_4/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-008",
+    "youtubeId": "hEJnMQG9ev8",
+    "title": "Mad Max: Fury Road Official Trailer",
+    "artist": "Warner Bros. Pictures",
+    "duration": 150,
+    "thumbnailUrl": "https://img.youtube.com/vi/hEJnMQG9ev8/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-009",
+    "youtubeId": "rt-2cxAiPJk",
+    "title": "Spider-Man: No Way Home Official Trailer",
+    "artist": "Sony Pictures",
+    "duration": 184,
+    "thumbnailUrl": "https://img.youtube.com/vi/rt-2cxAiPJk/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-010",
+    "youtubeId": "YoHD9XEInc0",
+    "title": "Inception Official Trailer",
+    "artist": "Warner Bros. Pictures",
+    "duration": 147,
+    "thumbnailUrl": "https://img.youtube.com/vi/YoHD9XEInc0/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-011",
+    "youtubeId": "73_1biulkYk",
+    "title": "Deadpool & Wolverine Official Trailer",
+    "artist": "Marvel Entertainment",
+    "duration": 158,
+    "thumbnailUrl": "https://img.youtube.com/vi/73_1biulkYk/hqdefault.jpg",
+    "category": "Trailer"
+  },
+  {
+    "id": "video-012",
+    "youtubeId": "4rgYUipGJNo",
+    "title": "Gladiator II Official Trailer",
+    "artist": "Paramount Pictures",
+    "duration": 190,
+    "thumbnailUrl": "https://img.youtube.com/vi/4rgYUipGJNo/hqdefault.jpg",
+    "category": "Trailer"
+  }
+]

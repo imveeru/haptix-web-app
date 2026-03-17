@@ -1,0 +1,189 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "author": "Haptix Generator",
+    "description": "Mock pattern for Gladiator II Official Trailer"
+  },
+  "events": [
+    {
+      "time": 5,
+      "duration": 213,
+      "intensity": 0.1,
+      "type": "continuous"
+    },
+    {
+      "time": 10,
+      "duration": 168,
+      "intensity": 0.67,
+      "type": "continuous"
+    },
+    {
+      "time": 15,
+      "duration": 193,
+      "intensity": 0.33,
+      "type": "transient"
+    },
+    {
+      "time": 20,
+      "duration": 426,
+      "intensity": 0.99,
+      "type": "transient"
+    },
+    {
+      "time": 25,
+      "duration": 501,
+      "intensity": 0.76,
+      "type": "continuous"
+    },
+    {
+      "time": 30,
+      "duration": 127,
+      "intensity": 0.68,
+      "type": "continuous"
+    },
+    {
+      "time": 35,
+      "duration": 143,
+      "intensity": 0.68,
+      "type": "continuous"
+    },
+    {
+      "time": 40,
+      "duration": 403,
+      "intensity": 0.71,
+      "type": "transient"
+    },
+    {
+      "time": 45,
+      "duration": 125,
+      "intensity": 0.59,
+      "type": "continuous"
+    },
+    {
+      "time": 50,
+      "duration": 232,
+      "intensity": 0.68,
+      "type": "continuous"
+    },
+    {
+      "time": 55,
+      "duration": 340,
+      "intensity": 0.53,
+      "type": "continuous"
+    },
+    {
+      "time": 60,
+      "duration": 295,
+      "intensity": 0.52,
+      "type": "continuous"
+    },
+    {
+      "time": 65,
+      "duration": 202,
+      "intensity": 0.73,
+      "type": "transient"
+    },
+    {
+      "time": 70,
+      "duration": 438,
+      "intensity": 0.27,
+      "type": "continuous"
+    },
+    {
+      "time": 75,
+      "duration": 406,
+      "intensity": 0.77,
+      "type": "transient"
+    },
+    {
+      "time": 80,
+      "duration": 356,
+      "intensity": 0.43,
+      "type": "continuous"
+    },
+    {
+      "time": 85,
+      "duration": 536,
+      "intensity": 0.78,
+      "type": "continuous"
+    },
+    {
+      "time": 90,
+      "duration": 561,
+      "intensity": 0.9,
+      "type": "transient"
+    },
+    {
+      "time": 95,
+      "duration": 443,
+      "intensity": 0.48,
+      "type": "continuous"
+    },
+    {
+      "time": 100,
+      "duration": 359,
+      "intensity": 0.11,
+      "type": "continuous"
+    },
+    {
+      "time": 105,
+      "duration": 223,
+      "intensity": 0.8,
+      "type": "continuous"
+    },
+    {
+      "time": 110,
+      "duration": 483,
+      "intensity": 0.73,
+      "type": "transient"
+    },
+    {
+      "time": 115,
+      "duration": 324,
+      "intensity": 0.55,
+      "type": "continuous"
+    },
+    {
+      "time": 120,
+      "duration": 313,
+      "intensity": 0.97,
+      "type": "transient"
+    },
+    {
+      "time": 125,
+      "duration": 369,
+      "intensity": 0.07,
+      "type": "continuous"
+    },
+    {
+      "time": 130,
+      "duration": 457,
+      "intensity": 0.07,
+      "type": "continuous"
+    },
+    {
+      "time": 135,
+      "duration": 245,
+      "intensity": 0.89,
+      "type": "transient"
+    },
+    {
+      "time": 140,
+      "duration": 393,
+      "intensity": 0.46,
+      "type": "continuous"
+    },
+    {
+      "time": 145,
+      "duration": 418,
+      "intensity": 0.12,
+      "type": "transient"
+    },
+    {
+      "time": 150,
+      "duration": 227,
+      "intensity": 0.39,
+      "type": "transient"
+    }
+  ]
+}

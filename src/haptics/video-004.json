@@ -1,0 +1,189 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "author": "Haptix Generator",
+    "description": "Mock pattern for Dune: Part Two Official Trailer"
+  },
+  "events": [
+    {
+      "time": 5,
+      "duration": 179,
+      "intensity": 0.5,
+      "type": "continuous"
+    },
+    {
+      "time": 10,
+      "duration": 568,
+      "intensity": 0.11,
+      "type": "continuous"
+    },
+    {
+      "time": 15,
+      "duration": 162,
+      "intensity": 0.44,
+      "type": "transient"
+    },
+    {
+      "time": 20,
+      "duration": 453,
+      "intensity": 0.06,
+      "type": "transient"
+    },
+    {
+      "time": 25,
+      "duration": 333,
+      "intensity": 0.58,
+      "type": "continuous"
+    },
+    {
+      "time": 30,
+      "duration": 296,
+      "intensity": 0.65,
+      "type": "transient"
+    },
+    {
+      "time": 35,
+      "duration": 179,
+      "intensity": 0.15,
+      "type": "continuous"
+    },
+    {
+      "time": 40,
+      "duration": 278,
+      "intensity": 0.58,
+      "type": "continuous"
+    },
+    {
+      "time": 45,
+      "duration": 360,
+      "intensity": 0.42,
+      "type": "continuous"
+    },
+    {
+      "time": 50,
+      "duration": 500,
+      "intensity": 0.01,
+      "type": "continuous"
+    },
+    {
+      "time": 55,
+      "duration": 121,
+      "intensity": 0.8,
+      "type": "transient"
+    },
+    {
+      "time": 60,
+      "duration": 329,
+      "intensity": 0.35,
+      "type": "continuous"
+    },
+    {
+      "time": 65,
+      "duration": 552,
+      "intensity": 0.34,
+      "type": "continuous"
+    },
+    {
+      "time": 70,
+      "duration": 407,
+      "intensity": 0.04,
+      "type": "transient"
+    },
+    {
+      "time": 75,
+      "duration": 202,
+      "intensity": 0.97,
+      "type": "continuous"
+    },
+    {
+      "time": 80,
+      "duration": 457,
+      "intensity": 0.2,
+      "type": "continuous"
+    },
+    {
+      "time": 85,
+      "duration": 405,
+      "intensity": 0.49,
+      "type": "continuous"
+    },
+    {
+      "time": 90,
+      "duration": 555,
+      "intensity": 0.58,
+      "type": "continuous"
+    },
+    {
+      "time": 95,
+      "duration": 436,
+      "intensity": 0.45,
+      "type": "transient"
+    },
+    {
+      "time": 100,
+      "duration": 530,
+      "intensity": 0.31,
+      "type": "transient"
+    },
+    {
+      "time": 105,
+      "duration": 564,
+      "intensity": 0.95,
+      "type": "transient"
+    },
+    {
+      "time": 110,
+      "duration": 463,
+      "intensity": 0.71,
+      "type": "transient"
+    },
+    {
+      "time": 115,
+      "duration": 209,
+      "intensity": 0.6,
+      "type": "continuous"
+    },
+    {
+      "time": 120,
+      "duration": 121,
+      "intensity": 0.91,
+      "type": "continuous"
+    },
+    {
+      "time": 125,
+      "duration": 322,
+      "intensity": 0.83,
+      "type": "transient"
+    },
+    {
+      "time": 130,
+      "duration": 256,
+      "intensity": 0.04,
+      "type": "transient"
+    },
+    {
+      "time": 135,
+      "duration": 554,
+      "intensity": 0.42,
+      "type": "continuous"
+    },
+    {
+      "time": 140,
+      "duration": 313,
+      "intensity": 0.96,
+      "type": "transient"
+    },
+    {
+      "time": 145,
+      "duration": 225,
+      "intensity": 0.94,
+      "type": "transient"
+    },
+    {
+      "time": 150,
+      "duration": 408,
+      "intensity": 0.66,
+      "type": "transient"
+    }
+  ]
+}

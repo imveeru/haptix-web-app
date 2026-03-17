@@ -1,0 +1,189 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "author": "Haptix Generator",
+    "description": "Mock pattern for Mad Max: Fury Road Official Trailer"
+  },
+  "events": [
+    {
+      "time": 5,
+      "duration": 124,
+      "intensity": 0.57,
+      "type": "continuous"
+    },
+    {
+      "time": 10,
+      "duration": 385,
+      "intensity": 0.36,
+      "type": "transient"
+    },
+    {
+      "time": 15,
+      "duration": 110,
+      "intensity": 0,
+      "type": "continuous"
+    },
+    {
+      "time": 20,
+      "duration": 253,
+      "intensity": 0.58,
+      "type": "continuous"
+    },
+    {
+      "time": 25,
+      "duration": 126,
+      "intensity": 0.07,
+      "type": "continuous"
+    },
+    {
+      "time": 30,
+      "duration": 536,
+      "intensity": 0.16,
+      "type": "continuous"
+    },
+    {
+      "time": 35,
+      "duration": 579,
+      "intensity": 0.3,
+      "type": "transient"
+    },
+    {
+      "time": 40,
+      "duration": 152,
+      "intensity": 0.85,
+      "type": "transient"
+    },
+    {
+      "time": 45,
+      "duration": 290,
+      "intensity": 0.23,
+      "type": "transient"
+    },
+    {
+      "time": 50,
+      "duration": 209,
+      "intensity": 0.16,
+      "type": "continuous"
+    },
+    {
+      "time": 55,
+      "duration": 472,
+      "intensity": 0.64,
+      "type": "transient"
+    },
+    {
+      "time": 60,
+      "duration": 219,
+      "intensity": 0,
+      "type": "transient"
+    },
+    {
+      "time": 65,
+      "duration": 391,
+      "intensity": 0.61,
+      "type": "continuous"
+    },
+    {
+      "time": 70,
+      "duration": 491,
+      "intensity": 0.75,
+      "type": "transient"
+    },
+    {
+      "time": 75,
+      "duration": 353,
+      "intensity": 0.26,
+      "type": "transient"
+    },
+    {
+      "time": 80,
+      "duration": 104,
+      "intensity": 0.77,
+      "type": "transient"
+    },
+    {
+      "time": 85,
+      "duration": 463,
+      "intensity": 0.16,
+      "type": "continuous"
+    },
+    {
+      "time": 90,
+      "duration": 212,
+      "intensity": 0.15,
+      "type": "continuous"
+    },
+    {
+      "time": 95,
+      "duration": 535,
+      "intensity": 0.87,
+      "type": "continuous"
+    },
+    {
+      "time": 100,
+      "duration": 245,
+      "intensity": 0.52,
+      "type": "transient"
+    },
+    {
+      "time": 105,
+      "duration": 400,
+      "intensity": 0.25,
+      "type": "transient"
+    },
+    {
+      "time": 110,
+      "duration": 104,
+      "intensity": 0.57,
+      "type": "continuous"
+    },
+    {
+      "time": 115,
+      "duration": 148,
+      "intensity": 0.16,
+      "type": "continuous"
+    },
+    {
+      "time": 120,
+      "duration": 437,
+      "intensity": 0.4,
+      "type": "continuous"
+    },
+    {
+      "time": 125,
+      "duration": 177,
+      "intensity": 0.72,
+      "type": "transient"
+    },
+    {
+      "time": 130,
+      "duration": 178,
+      "intensity": 0.04,
+      "type": "transient"
+    },
+    {
+      "time": 135,
+      "duration": 166,
+      "intensity": 0.48,
+      "type": "continuous"
+    },
+    {
+      "time": 140,
+      "duration": 356,
+      "intensity": 0.15,
+      "type": "transient"
+    },
+    {
+      "time": 145,
+      "duration": 599,
+      "intensity": 0.52,
+      "type": "continuous"
+    },
+    {
+      "time": 150,
+      "duration": 120,
+      "intensity": 0.05,
+      "type": "transient"
+    }
+  ]
+}
