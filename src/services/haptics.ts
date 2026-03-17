@@ -1,28 +1,52 @@
 import { WebHaptics } from 'web-haptics';
-import { HapticsServiceOptions, HapticEvent } from '../types';
+import { HapticsServiceOptions } from '../types';
+
+interface InternalEvent {
+  time: number;       // absolute seconds from video start
+  duration: number;   // ms
+  intensity: number;  // 0-1
+}
 
 export class HapticsService {
   private haptics: WebHaptics | null = null;
   private timerId: number | null = null;
-  private events: HapticEvent[] = [];
+  private events: InternalEvent[] = [];
   private eventIndex: number = 0;
-  private onEvent?: (event: HapticEvent) => void;
+  private onEvent?: (event: InternalEvent) => void;
 
   constructor(options: HapticsServiceOptions) {
-    this.events = options.pattern.events.sort((a, b) => a.time - b.time);
-    this.onEvent = options.onEvent;
+    // Convert relative-delay format to absolute times
+    let absoluteMs = 0;
+    this.events = options.pattern.events.map((step) => {
+      absoluteMs += (step.delay ?? 0);
+      const event: InternalEvent = {
+        time: absoluteMs / 1000,
+        duration: step.duration,
+        intensity: step.intensity,
+      };
+      absoluteMs += step.duration;
+      return event;
+    });
 
-    if (WebHaptics.isSupported) {
-      this.haptics = new WebHaptics();
-    } else {
-      if (options.onUnsupported) {
-        options.onUnsupported();
-      }
-    }
+    // web-haptics provides an iOS fallback hack when navigator.vibrate is absent,
+    // so we should always instantiate it.
+    this.haptics = new WebHaptics();
   }
 
   get isSupported(): boolean {
     return !!this.haptics;
+  }
+
+  get isNativelySupported(): boolean {
+    return WebHaptics.isSupported;
+  }
+
+  get hasFallbackSupport(): boolean {
+    return navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad');
+  }
+
+  get isEffectivelySupported(): boolean {
+    return this.isNativelySupported || this.hasFallbackSupport;
   }
 
   start(getCurrentTime: () => number): void {
@@ -61,8 +85,7 @@ export class HapticsService {
       const event = this.events[this.eventIndex];
       // Fire if current time is within 0.05s of the event time
       if (currentTime >= event.time - 0.05 && currentTime <= event.time + 0.05) {
-        // Safe to call trigger with any of the supported types
-        this.haptics.trigger(event.trigger as any);
+        this.haptics.trigger([{ duration: event.duration, intensity: event.intensity }] as any);
         if (this.onEvent) {
           this.onEvent(event);
         }

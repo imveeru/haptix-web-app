@@ -31,6 +31,7 @@
   font: var(--font-headline);
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -90,6 +91,12 @@
   color: var(--color-secondary-label);
 }
 
+.haptics-badge.unsupported {
+  background-color: var(--color-fill-secondary);
+  color: var(--color-secondary-label);
+  opacity: 0.6;
+}
+
 .haptics-badge svg {
   width: 14px;
   height: 14px;
@@ -133,6 +140,7 @@
 /* Custom Range Input */
 input[type=range] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   background: transparent;
   height: 44px; /* optimal touch target */
@@ -140,6 +148,7 @@ input[type=range] {
 
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   height: 16px;
   width: 16px;
   border-radius: 50%;

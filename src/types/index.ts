@@ -21,33 +21,10 @@ export interface HapticsMap {
   entries: HapticsMapEntry[];
 }
 
-export type HapticPreset =
-  | 'success' | 'warning' | 'error'
-  | 'light'   | 'medium'  | 'heavy'
-  | 'soft'    | 'rigid'   | 'nudge' | 'buzz';
-
-export interface VibrationPulse {
-  duration: number;     // on-time in ms
-  delay?: number;       // silence before this pulse in ms
-  intensity?: number;   // 0–1
-}
-
-export interface NamedVibrationPattern {
-  pattern: VibrationPulse[];
-  description?: string;
-}
-
-export type HapticTrigger =
-  | HapticPreset
-  | number
-  | number[]
-  | VibrationPulse[]
-  | NamedVibrationPattern;
-
 export interface HapticEvent {
-  time: number;             // seconds from video start
-  trigger: HapticTrigger;   // passed verbatim to haptics.trigger()
-  description?: string;     // authoring label only, unused at runtime
+  delay?: number;      // ms to wait before firing (from video start for first event, from end of previous for rest)
+  duration: number;    // vibration on-time in ms
+  intensity: number;   // 0-1
 }
 
 export interface HapticPattern {
@@ -70,7 +47,7 @@ export interface RouterState {
 export interface FeedbackQuestion {
   id: string;
   label: string;
-  rating: number;           // 0–5, 0 = unset
+  rating: number;           // 0-5, 0 = unset
 }
 
 export interface FeedbackSubmission {

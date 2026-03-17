@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/dev-sw.js?dev-sw', { scope: '/', type: 'classic' })
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/haptix-web-app/dev-sw.js?dev-sw', { scope: '/haptix-web-app/', type: 'classic' })

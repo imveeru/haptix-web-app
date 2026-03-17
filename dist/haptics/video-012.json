@@ -1,0 +1,156 @@
+{
+  "videoId": "video-012",
+  "totalDuration": 150.227,
+  "events": [
+    {
+      "delay": 5000,
+      "duration": 213,
+      "intensity": 0.1
+    },
+    {
+      "delay": 4787,
+      "duration": 168,
+      "intensity": 0.67
+    },
+    {
+      "delay": 4832,
+      "duration": 193,
+      "intensity": 0.33
+    },
+    {
+      "delay": 4807,
+      "duration": 426,
+      "intensity": 0.99
+    },
+    {
+      "delay": 4574,
+      "duration": 501,
+      "intensity": 0.76
+    },
+    {
+      "delay": 4499,
+      "duration": 127,
+      "intensity": 0.68
+    },
+    {
+      "delay": 4873,
+      "duration": 143,
+      "intensity": 0.68
+    },
+    {
+      "delay": 4857,
+      "duration": 403,
+      "intensity": 0.71
+    },
+    {
+      "delay": 4597,
+      "duration": 125,
+      "intensity": 0.59
+    },
+    {
+      "delay": 4875,
+      "duration": 232,
+      "intensity": 0.68
+    },
+    {
+      "delay": 4768,
+      "duration": 340,
+      "intensity": 0.53
+    },
+    {
+      "delay": 4660,
+      "duration": 295,
+      "intensity": 0.52
+    },
+    {
+      "delay": 4705,
+      "duration": 202,
+      "intensity": 0.73
+    },
+    {
+      "delay": 4798,
+      "duration": 438,
+      "intensity": 0.27
+    },
+    {
+      "delay": 4562,
+      "duration": 406,
+      "intensity": 0.77
+    },
+    {
+      "delay": 4594,
+      "duration": 356,
+      "intensity": 0.43
+    },
+    {
+      "delay": 4644,
+      "duration": 536,
+      "intensity": 0.78
+    },
+    {
+      "delay": 4464,
+      "duration": 561,
+      "intensity": 0.9
+    },
+    {
+      "delay": 4439,
+      "duration": 443,
+      "intensity": 0.48
+    },
+    {
+      "delay": 4557,
+      "duration": 359,
+      "intensity": 0.11
+    },
+    {
+      "delay": 4641,
+      "duration": 223,
+      "intensity": 0.8
+    },
+    {
+      "delay": 4777,
+      "duration": 483,
+      "intensity": 0.73
+    },
+    {
+      "delay": 4517,
+      "duration": 324,
+      "intensity": 0.55
+    },
+    {
+      "delay": 4676,
+      "duration": 313,
+      "intensity": 0.97
+    },
+    {
+      "delay": 4687,
+      "duration": 369,
+      "intensity": 0.07
+    },
+    {
+      "delay": 4631,
+      "duration": 457,
+      "intensity": 0.07
+    },
+    {
+      "delay": 4543,
+      "duration": 245,
+      "intensity": 0.89
+    },
+    {
+      "delay": 4755,
+      "duration": 393,
+      "intensity": 0.46
+    },
+    {
+      "delay": 4607,
+      "duration": 418,
+      "intensity": 0.12
+    },
+    {
+      "delay": 4582,
+      "duration": 227,
+      "intensity": 0.39
+    }
+  ]
+}

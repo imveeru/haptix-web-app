@@ -1,0 +1,21 @@
+{
+  "videoId": "video-002",
+  "totalDuration": 15.371,
+  "events": [
+    {
+      "delay": 5000,
+      "duration": 121,
+      "intensity": 0.79
+    },
+    {
+      "delay": 4879,
+      "duration": 491,
+      "intensity": 0.41
+    },
+    {
+      "delay": 4509,
+      "duration": 371,
+      "intensity": 0.19
+    }
+  ]
+}

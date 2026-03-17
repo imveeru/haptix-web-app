@@ -167,28 +167,28 @@ export class PlayerPage implements PageController {
     }
 
     try {
-      // Dynamic import of the pattern file to mimic local fetch resolving
-      // In Vite, to read dynamic JSON we can fetch it. Because it's public/src mapping:
-      const res = await fetch(entry.hapticsFile);
-      if (!res.ok) throw new Error();
+      // Fetch haptics pattern from public directory taking Vite base path into account
+      // Attach cache buster to override strict PWA caching logic that might be causing phantom 404s
+      const url = `${import.meta.env.BASE_URL}${entry.hapticsFile}?v=${Date.now()}`;
+      console.log('Fetching haptics file from:', url);
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
+      }
       const pattern: HapticPattern = await res.json();
       
       this.hapticsService = new HapticsService({
-        pattern,
-        onUnsupported: () => {
-          // Hide badge entirely
-          this.hapticsBadge.style.display = 'none';
-        }
+        pattern
       });
 
-      if (!this.hapticsService.isSupported) {
-        this.hapticsBadge.style.display = 'none';
+      if (!this.hapticsService.isEffectivelySupported) {
+        this.updateHapticsBadgeState('unsupported');
       } else {
         this.updateHapticsBadgeState('paused');
       }
 
-    } catch (e) {
-      console.warn('Could not load haptics file', e);
+    } catch (e: any) {
+      console.warn('Could not load haptics file Error', e.message || e);
       this.hapticsBadge.style.display = 'none';
     }
   }
@@ -200,7 +200,7 @@ export class PlayerPage implements PageController {
       iconEl.innerHTML = this.pauseIconHTML;
       this.playPauseBtn.setAttribute('aria-label', 'Pause');
       this.startSyncLoop();
-      if (this.hapticsService?.isSupported) {
+      if (this.hapticsService?.isEffectivelySupported) {
         this.hapticsService.start(() => this.ytPlayer!.getCurrentTime());
         this.updateHapticsBadgeState('active');
       }
@@ -208,7 +208,7 @@ export class PlayerPage implements PageController {
       iconEl.innerHTML = this.playIconHTML;
       this.playPauseBtn.setAttribute('aria-label', 'Play');
       this.stopSyncLoop();
-      if (this.hapticsService?.isSupported) {
+      if (this.hapticsService?.isEffectivelySupported) {
         this.hapticsService.pause();
         this.updateHapticsBadgeState('paused');
       }
@@ -219,14 +219,17 @@ export class PlayerPage implements PageController {
     }
   }
 
-  private updateHapticsBadgeState(state: 'active' | 'paused') {
+  private updateHapticsBadgeState(state: 'active' | 'paused' | 'unsupported') {
     const textEl = this.container.querySelector('#haptics-badge-text')!;
     if (state === 'active') {
       this.hapticsBadge.className = 'haptics-badge active';
       textEl.textContent = 'Haptics Active';
-    } else {
+    } else if (state === 'paused') {
       this.hapticsBadge.className = 'haptics-badge paused';
       textEl.textContent = 'Haptics Paused';
+    } else if (state === 'unsupported') {
+      this.hapticsBadge.className = 'haptics-badge unsupported';
+      textEl.textContent = 'Haptics Unsupported';
     }
   }
 
