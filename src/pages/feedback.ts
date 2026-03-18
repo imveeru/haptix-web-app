@@ -29,7 +29,7 @@ export class FeedbackPage implements PageController {
   }
 
   unmount(): void {
-    this.container.innerHTML = '';
+    this.container.replaceChildren();
   }
 
   private render() {
@@ -43,11 +43,11 @@ export class FeedbackPage implements PageController {
           <button type="submit" class="submit-button" id="submit-btn">Submit Feedback</button>
           <div class="error-text" id="error-text" role="alert" aria-live="assertive"></div>
         </form>
-      </div>
-    `;
+      </div>`;
 
     const qContainer = this.container.querySelector('#questions-container')!;
-    
+    this.starComponents = [];
+
     this.questions.forEach((q, index) => {
       const fieldset = document.createElement('fieldset');
       const legend = document.createElement('legend');
@@ -58,14 +58,14 @@ export class FeedbackPage implements PageController {
         this.questions[index].rating = rating;
         this.clearError();
       });
-      
+
       this.starComponents.push(starRating);
       fieldset.appendChild(starRating.getElement());
       qContainer.appendChild(fieldset);
     });
 
-    const form = this.container.querySelector('#feedback-form') as HTMLFormElement;
-    form.addEventListener('submit', (e) => this.handleSubmit(e));
+    (this.container.querySelector('#feedback-form') as HTMLFormElement)
+      .addEventListener('submit', (e) => this.handleSubmit(e));
   }
 
   private async handleSubmit(e: Event) {
@@ -73,18 +73,18 @@ export class FeedbackPage implements PageController {
     this.clearError();
 
     const submitBtn = this.container.querySelector('#submit-btn') as HTMLButtonElement;
-    
+
     const submission: FeedbackSubmission = {
       timestamp: new Date().toISOString(),
-      questions: [...this.questions]
+      questions: [...this.questions],
     };
 
     try {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
-      
+
       await submitFeedback(submission);
-      
+
       toastInstance.show('Thanks for your feedback!');
       this.resetForm();
     } catch (err: any) {
@@ -101,8 +101,7 @@ export class FeedbackPage implements PageController {
   }
 
   private showError(msg: string) {
-    const errorEl = this.container.querySelector('#error-text')!;
-    errorEl.textContent = msg;
+    (this.container.querySelector('#error-text') as HTMLElement).textContent = msg;
   }
 
   private clearError() {

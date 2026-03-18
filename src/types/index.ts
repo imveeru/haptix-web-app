@@ -52,7 +52,6 @@ export interface FeedbackQuestion {
 
 export interface FeedbackSubmission {
   timestamp: string;        // ISO 8601
-  videoId?: string;
   questions: FeedbackQuestion[];
 }
 
@@ -83,6 +82,4 @@ export const YT_PLAYER_STATE = {
 
 export interface HapticsServiceOptions {
   pattern: HapticPattern;
-  onEvent?: (event: HapticEvent) => void;
-  onUnsupported?: () => void;
 }

@@ -9,18 +9,19 @@ export class Toast {
     this.element.setAttribute('role', 'status');
     this.element.setAttribute('aria-live', 'polite');
 
-    const iconSvg = `
-      <svg class="toast-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-      </svg>
-    `;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.classList.add('toast-icon');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#icon-check');
+    svg.appendChild(use);
 
     this.messageEl = document.createElement('span');
     this.messageEl.className = 'toast-message';
 
-    this.element.innerHTML = iconSvg;
-    this.element.appendChild(this.messageEl);
-    
+    this.element.append(svg, this.messageEl);
     document.body.appendChild(this.element);
   }
 
@@ -30,10 +31,10 @@ export class Toast {
     }
 
     this.messageEl.textContent = message;
-    
+
     // Trigger reflow to ensure transition runs if it was just hidden
     void this.element.offsetWidth;
-    
+
     this.element.classList.add('visible');
 
     this.timeoutId = window.setTimeout(() => {

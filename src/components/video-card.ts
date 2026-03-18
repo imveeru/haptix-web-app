@@ -2,62 +2,52 @@ import { VideoMeta } from '../types';
 
 export class VideoCard {
   private element: HTMLElement;
-  private video: VideoMeta;
-  private onNavigate: (videoId: string) => void;
 
   constructor(video: VideoMeta, onNavigate: (videoId: string) => void) {
-    this.video = video;
-    this.onNavigate = onNavigate;
-    
     this.element = document.createElement('article');
     this.element.className = 'video-card';
     this.element.setAttribute('role', 'button');
     this.element.setAttribute('tabindex', '0');
-    
-    this.render();
-    this.attachEvents();
-  }
 
-  getElement(): HTMLElement {
-    return this.element;
-  }
+    const mm = Math.floor(video.duration / 60);
+    const ss = (video.duration % 60).toString().padStart(2, '0');
+    const artistText = video.artist ? `${video.artist} · ` : '';
 
-  private render() {
-    const mm = Math.floor(this.video.duration / 60);
-    const ss = (this.video.duration % 60).toString().padStart(2, '0');
-    const timeStr = `${mm}:${ss}`;
-    
-    const artistText = this.video.artist ? `${this.video.artist} · ` : '';
+    const thumbContainer = document.createElement('div');
+    thumbContainer.className = 'video-thumb-container';
+    const img = document.createElement('img');
+    img.className = 'video-thumb';
+    img.src = video.thumbnailUrl;
+    img.loading = 'lazy';
+    img.alt = '';
+    thumbContainer.appendChild(img);
 
-    this.element.innerHTML = `
-      <div class="video-thumb-container">
-        <img class="video-thumb" src="${this.video.thumbnailUrl}" loading="lazy" alt="" />
-      </div>
-      <div class="video-info">
-        <h3 class="video-title">${this.video.title}</h3>
-        <span class="video-subtitle">${artistText}${timeStr}</span>
-      </div>
-    `;
-  }
+    const info = document.createElement('div');
+    info.className = 'video-info';
+    const title = document.createElement('h3');
+    title.className = 'video-title';
+    title.textContent = video.title;
+    const subtitle = document.createElement('span');
+    subtitle.className = 'video-subtitle';
+    subtitle.textContent = `${artistText}${mm}:${ss}`;
+    info.append(title, subtitle);
 
-  private attachEvents() {
-    // Keyboard support
+    this.element.append(thumbContainer, info);
+
     this.element.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        this.onNavigate(this.video.id);
+        onNavigate(video.id);
       }
     });
 
-    // Pointer events
     this.element.addEventListener('pointerdown', () => {
       this.element.classList.add('pressed');
     });
 
     this.element.addEventListener('pointerup', () => {
       this.element.classList.remove('pressed');
-      // On tap finish
-      this.onNavigate(this.video.id);
+      onNavigate(video.id);
     });
 
     this.element.addEventListener('pointercancel', () => {
@@ -67,5 +57,9 @@ export class VideoCard {
     this.element.addEventListener('pointerleave', () => {
       this.element.classList.remove('pressed');
     });
+  }
+
+  getElement(): HTMLElement {
+    return this.element;
   }
 }

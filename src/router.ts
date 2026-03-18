@@ -79,7 +79,7 @@ export class Router {
     const controller = this.pages[this.currentState.route];
     if (controller) {
       // Clear root element
-      this.rootElement.innerHTML = '';
+      this.rootElement.replaceChildren();
       this.activeController = controller;
       controller.mount(this.rootElement, this.currentState.params);
     } else {
