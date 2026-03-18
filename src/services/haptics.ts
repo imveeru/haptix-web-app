@@ -11,6 +11,7 @@ interface InternalEvent {
 export class HapticsService {
   private events: InternalEvent[] = [];
   private haptics: WebHaptics | null = null;
+  private triggerTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(options: HapticsServiceOptions) {
     let absoluteMs = 0;
@@ -47,7 +48,11 @@ export class HapticsService {
   }
 
   start(getCurrentTime: () => number): void {
-    // Cancel any in-progress haptics
+    // Cancel any in-progress haptics and pending trigger
+    if (this.triggerTimeout !== null) {
+      clearTimeout(this.triggerTimeout);
+      this.triggerTimeout = null;
+    }
     this.haptics?.cancel();
 
     const currentTime = getCurrentTime();
@@ -59,10 +64,12 @@ export class HapticsService {
     const pattern: Vibration[] = [];
     const first = this.events[startIndex];
     const msUntilFirst = (first.time - currentTime) * 1000;
+    let triggerDelay = 0;
 
     if (msUntilFirst > 0) {
-      // Event is in the future — delay until it starts
-      pattern.push({ delay: msUntilFirst, duration: first.duration, intensity: first.intensity });
+      // Event is in the future — defer the trigger, no delay on first pattern entry
+      triggerDelay = msUntilFirst;
+      pattern.push({ duration: first.duration, intensity: first.intensity });
     } else {
       // We're mid-event — play the remaining portion
       const remaining = (first.time + first.duration / 1000 - currentTime) * 1000;
@@ -78,10 +85,21 @@ export class HapticsService {
 
     // Create a fresh instance and trigger once — same approach as Test Haptics
     this.haptics = new WebHaptics();
-    this.haptics.trigger(pattern);
+    if (triggerDelay > 0) {
+      this.triggerTimeout = setTimeout(() => {
+        this.triggerTimeout = null;
+        this.haptics?.trigger(pattern);
+      }, triggerDelay);
+    } else {
+      this.haptics.trigger(pattern);
+    }
   }
 
   stop(): void {
+    if (this.triggerTimeout !== null) {
+      clearTimeout(this.triggerTimeout);
+      this.triggerTimeout = null;
+    }
     this.haptics?.cancel();
   }
 }
