@@ -72,9 +72,7 @@ export class HapticsService {
     const timeUntilEventMs = (currentEvent.time - currentTime) * 1000;
     
     if (timeUntilEventMs > 0) {
-      // Event is in the future, we need an initial padded delay.
-      // web-haptics requires the first array element to be a Vibration (no delay).
-      pattern.push({ duration: 1, intensity: 0 }); // Dummy initial vibration
+      // Event is in the future, just pass the delay natively
       pattern.push({
         delay: timeUntilEventMs,
         duration: currentEvent.duration,

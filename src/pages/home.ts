@@ -25,6 +25,7 @@ export class HomePage implements PageController {
     this.container.innerHTML = `
       <header class="home-header">
         <h1 class="home-title">Haptix</h1>
+        <button id="test-haptics-btn" class="test-haptics-btn">Test Haptics</button>
       </header>
       <div class="video-grid" id="video-grid"></div>
     `;
@@ -38,5 +39,15 @@ export class HomePage implements PageController {
       });
       grid.appendChild(card.getElement());
     });
+
+    const testHapticsBtn = this.container.querySelector('#test-haptics-btn');
+    if (testHapticsBtn) {
+      testHapticsBtn.addEventListener('click', () => {
+        import('web-haptics').then(({ WebHaptics }) => {
+          const haptics = new WebHaptics();
+          haptics.trigger('success');
+        });
+      });
+    }
   }
 }
