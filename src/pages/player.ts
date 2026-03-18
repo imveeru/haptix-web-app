@@ -204,7 +204,7 @@ export class PlayerPage implements PageController {
       this.playPauseBtn.setAttribute('aria-label', 'Pause');
       this.startSyncLoop();
       if (this.hapticsService?.isEffectivelySupported) {
-        this.hapticsService.start(() => this.ytPlayer!.getCurrentTime());
+        this.hapticsService.start();
         this.updateHapticsBadgeState('active');
       }
     } else {
