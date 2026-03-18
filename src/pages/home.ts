@@ -48,7 +48,6 @@ export class HomePage implements PageController {
           haptics.trigger(
             [
               {
-                "delay": 4715.071051498413,
                 "duration": 363,
                 "intensity": 0.99
               },
