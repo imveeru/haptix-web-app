@@ -3,7 +3,7 @@ import { HapticsServiceOptions } from '../types';
 
 interface InternalEvent {
   time: number;       // absolute seconds from video start
-  delay: number;      // ms from previous event
+  delay: number;      // ms from end of previous event
   duration: number;   // ms
   intensity: number;  // 0-1
 }
@@ -15,20 +15,19 @@ export class HapticsService {
   constructor(options: HapticsServiceOptions) {
     let absoluteMs = 0;
     this.events = [];
-    
-    // Parse the events to absolute times
+
     for (let i = 0; i < options.pattern.events.length; i++) {
       const step = options.pattern.events[i];
-      // Skip the dummy 0/1 duration event we added at the start of JSON (if it has no delay)
+      // Skip dummy 0/1 duration event at the start of JSON (if it has no delay)
       if (i === 0 && (step.delay === undefined || step.delay === null) && step.duration <= 1) {
         continue;
       }
-      
+
       const delay = step.delay ?? 0;
       absoluteMs += delay;
       this.events.push({
         time: absoluteMs / 1000,
-        delay: delay,
+        delay,
         duration: step.duration,
         intensity: step.intensity ?? 1,
       });
@@ -36,10 +35,6 @@ export class HapticsService {
     }
 
     this.haptics = new WebHaptics();
-  }
-
-  get isSupported(): boolean {
-    return !!this.haptics;
   }
 
   get isNativelySupported(): boolean {
@@ -56,63 +51,36 @@ export class HapticsService {
 
   start(getCurrentTime: () => number): void {
     if (!this.haptics) return;
-    
-    // Stop any currently playing sequence
     this.haptics.cancel();
-    
+
     const currentTime = getCurrentTime();
-    
+
     // Find the first event that hasn't finished yet
-    const index = this.events.findIndex(e => e.time + (e.duration / 1000) > currentTime);
-    
-    if (index === -1) return; // All events are in the past
-    
+    const startIndex = this.events.findIndex(e => e.time + e.duration / 1000 > currentTime);
+    if (startIndex === -1) return;
+
     const pattern: any[] = [];
-    const currentEvent = this.events[index];
-    const timeUntilEventMs = (currentEvent.time - currentTime) * 1000;
-    
-    if (timeUntilEventMs > 0) {
-      // Event is in the future, just pass the delay natively
-      pattern.push({
-        delay: timeUntilEventMs,
-        duration: currentEvent.duration,
-        intensity: currentEvent.intensity
-      });
+    const first = this.events[startIndex];
+    const msUntilFirst = (first.time - currentTime) * 1000;
+
+    if (msUntilFirst > 0) {
+      // Event is still in the future
+      pattern.push({ delay: msUntilFirst, duration: first.duration, intensity: first.intensity });
     } else {
-      // Event is currently overlapping with our current time
-      const remainingDuration = (currentEvent.time + (currentEvent.duration / 1000) - currentTime) * 1000;
-      pattern.push({
-        duration: Math.max(1, remainingDuration),
-        intensity: currentEvent.intensity
-      });
+      // We're mid-event — play the remaining portion
+      const remaining = (first.time + first.duration / 1000 - currentTime) * 1000;
+      pattern.push({ duration: Math.max(1, remaining), intensity: first.intensity });
     }
-    
-    // Append the rest of the sequence
-    for (let i = index + 1; i < this.events.length; i++) {
-       const ev = this.events[i];
-       pattern.push({
-         delay: ev.delay,
-         duration: ev.duration,
-         intensity: ev.intensity
-       });
+
+    for (let i = startIndex + 1; i < this.events.length; i++) {
+      const ev = this.events[i];
+      pattern.push({ delay: ev.delay, duration: ev.duration, intensity: ev.intensity });
     }
-    
+
     this.haptics.trigger(pattern);
   }
 
-  pause(): void {
-    if (this.haptics) {
-      this.haptics.cancel();
-    }
-  }
-
   stop(): void {
-    this.pause();
-  }
-
-  seek(_time: number): void {
-    if (this.haptics) {
-      this.haptics.cancel();
-    }
+    this.haptics?.cancel();
   }
 }

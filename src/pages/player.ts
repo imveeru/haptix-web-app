@@ -144,7 +144,7 @@ export class PlayerPage implements PageController {
       const val = parseFloat(this.seekBar.value);
       this.timeDisplay.textContent = formatTime(val);
       if (this.hapticsService) {
-        this.hapticsService.seek(val);
+        this.hapticsService.stop();
       }
     });
 
@@ -198,7 +198,7 @@ export class PlayerPage implements PageController {
 
   private onPlayerStateChange(state: number) {
     const iconEl = this.container.querySelector('#play-pause-icon')!;
-    
+
     if (state === YT_PLAYER_STATE.PLAYING) {
       iconEl.innerHTML = this.pauseIconHTML;
       this.playPauseBtn.setAttribute('aria-label', 'Pause');
@@ -206,18 +206,14 @@ export class PlayerPage implements PageController {
       if (this.hapticsService?.isEffectivelySupported) {
         this.hapticsService.start(() => this.ytPlayer!.getCurrentTime());
         this.updateHapticsBadgeState('active');
-        toastInstance.show('Haptics Playing', 2000);
       }
     } else {
       iconEl.innerHTML = this.playIconHTML;
       this.playPauseBtn.setAttribute('aria-label', 'Play');
       this.stopSyncLoop();
       if (this.hapticsService?.isEffectivelySupported) {
-        this.hapticsService.pause();
+        this.hapticsService.stop();
         this.updateHapticsBadgeState('paused');
-        if (state === YT_PLAYER_STATE.PAUSED) {
-          toastInstance.show('Haptics Paused', 2000);
-        }
       }
     }
 
