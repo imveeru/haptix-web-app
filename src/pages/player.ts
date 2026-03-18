@@ -133,8 +133,13 @@ export class PlayerPage implements PageController {
       if (!this.ytPlayer) return;
       const state = this.ytPlayer.getPlayerState();
       if (state === YT_PLAYER_STATE.PLAYING) {
+        this.hapticsService?.stop();
         this.ytPlayer.pauseVideo();
       } else {
+        // Must call start() here — inside a direct user gesture — for Web Audio to work
+        if (this.hapticsService?.isEffectivelySupported) {
+          this.hapticsService.start();
+        }
         this.ytPlayer.playVideo();
       }
     });
@@ -204,7 +209,6 @@ export class PlayerPage implements PageController {
       this.playPauseBtn.setAttribute('aria-label', 'Pause');
       this.startSyncLoop();
       if (this.hapticsService?.isEffectivelySupported) {
-        this.hapticsService.start();
         this.updateHapticsBadgeState('active');
       }
     } else {
