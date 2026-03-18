@@ -2,6 +2,7 @@ import { PageController, Router } from '../router';
 import { RouteParams, YTPlayer, YT_PLAYER_STATE, HapticPattern } from '../types';
 import { YouTubeService } from '../services/youtube';
 import { HapticsService } from '../services/haptics';
+import { WebHaptics } from 'web-haptics';
 import { toastInstance } from '../components/toast';
 import videosData from '../data/videos.json';
 import hapticsMapData from '../data/haptics-map.json';
@@ -21,8 +22,10 @@ export class PlayerPage implements PageController {
   private router: Router;
   private ytPlayer: YTPlayer | null = null;
   private hapticsService: HapticsService | null = null;
+  private haptics: WebHaptics | null = null;
+  private hapticsTimeout: ReturnType<typeof setTimeout> | null = null;
   private timeUpdateRaf: number | null = null;
-  
+
   // UI Elements
   private playPauseBtn!: HTMLElement;
   private playIconHTML = '<path d="M8 5v14l11-7z" />';
@@ -30,7 +33,7 @@ export class PlayerPage implements PageController {
   private timeDisplay!: HTMLElement;
   private seekBar!: HTMLInputElement;
   private hapticsBadge!: HTMLElement;
-  
+
   private isSeeking = false;
 
   constructor(router: Router) {
@@ -52,11 +55,11 @@ export class PlayerPage implements PageController {
 
     this.render(video.title);
     this.attachEvents();
-    
+
     // Setup haptics First
     await this.setupHaptics(params.videoId);
-    
-    // Then load player 
+
+    // Then load player
     // Uses the youtubeId mapped to the internal video.id
     this.ytPlayer = await ytService.loadPlayer('yt-player-frame', video.youtubeId, (event) => {
       this.onPlayerStateChange(event.data);
@@ -67,9 +70,7 @@ export class PlayerPage implements PageController {
     if (this.timeUpdateRaf !== null) {
       cancelAnimationFrame(this.timeUpdateRaf);
     }
-    if (this.hapticsService) {
-      this.hapticsService.stop();
-    }
+    this.cancelHaptics();
     ytService.destroy();
     this.container.innerHTML = '';
   }
@@ -85,11 +86,11 @@ export class PlayerPage implements PageController {
           </button>
           <h2 class="player-title">${title}</h2>
         </header>
-        
+
         <div class="player-container" id="player-container">
           <div id="yt-player-frame"></div>
         </div>
-        
+
         <div class="player-controls">
           <div class="haptics-badge" id="haptics-badge" role="status" aria-live="polite">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -126,19 +127,29 @@ export class PlayerPage implements PageController {
 
   private attachEvents() {
     this.container.querySelector('#back-btn')?.addEventListener('click', () => {
-      window.history.back(); // or router.navigate('home')
+      window.history.back();
     });
 
     this.playPauseBtn.addEventListener('click', () => {
       if (!this.ytPlayer) return;
       const state = this.ytPlayer.getPlayerState();
       if (state === YT_PLAYER_STATE.PLAYING) {
-        this.hapticsService?.stop();
+        this.cancelHaptics();
         this.ytPlayer.pauseVideo();
       } else {
-        // Must call start() here — inside a direct user gesture — for Web Audio to work
-        if (this.hapticsService?.isEffectivelySupported) {
-          this.hapticsService.start();
+        // Trigger haptics directly here — must be inside a user gesture for Web Audio to work
+        if (this.hapticsService && HapticsService.isEffectivelySupported()) {
+          const { pattern, initialDelay } = this.hapticsService;
+          console.log('[Haptics] Final pattern:', pattern);
+          this.haptics = new WebHaptics();
+          if (initialDelay > 0) {
+            this.hapticsTimeout = setTimeout(() => {
+              this.hapticsTimeout = null;
+              this.haptics?.trigger(pattern);
+            }, initialDelay);
+          } else {
+            this.haptics.trigger(pattern);
+          }
         }
         this.ytPlayer.playVideo();
       }
@@ -148,9 +159,7 @@ export class PlayerPage implements PageController {
       this.isSeeking = true;
       const val = parseFloat(this.seekBar.value);
       this.timeDisplay.textContent = formatTime(val);
-      if (this.hapticsService) {
-        this.hapticsService.stop();
-      }
+      this.cancelHaptics();
     });
 
     this.seekBar.addEventListener('change', () => {
@@ -165,6 +174,14 @@ export class PlayerPage implements PageController {
     });
   }
 
+  private cancelHaptics() {
+    if (this.hapticsTimeout !== null) {
+      clearTimeout(this.hapticsTimeout);
+      this.hapticsTimeout = null;
+    }
+    this.haptics?.cancel();
+  }
+
   private async setupHaptics(videoId: string) {
     const entry = hapticsMapData.entries.find(e => e.videoId === videoId);
     if (!entry) {
@@ -174,8 +191,6 @@ export class PlayerPage implements PageController {
     }
 
     try {
-      // Fetch haptics pattern from public directory taking Vite base path into account
-      // Attach cache buster to override strict PWA caching logic that might be causing phantom 404s
       const url = `${import.meta.env.BASE_URL}${entry.hapticsFile}?v=${Date.now()}`;
       console.log('Fetching haptics file from:', url);
       const res = await fetch(url);
@@ -183,12 +198,10 @@ export class PlayerPage implements PageController {
         throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
       }
       const pattern: HapticPattern = await res.json();
-      
-      this.hapticsService = new HapticsService({
-        pattern
-      });
 
-      if (!this.hapticsService.isEffectivelySupported) {
+      this.hapticsService = new HapticsService({ pattern });
+
+      if (!HapticsService.isEffectivelySupported()) {
         this.updateHapticsBadgeState('unsupported');
         toastInstance.show('Web Haptics are not supported on this device', 4000);
       } else {
@@ -208,15 +221,15 @@ export class PlayerPage implements PageController {
       iconEl.innerHTML = this.pauseIconHTML;
       this.playPauseBtn.setAttribute('aria-label', 'Pause');
       this.startSyncLoop();
-      if (this.hapticsService?.isEffectivelySupported) {
+      if (HapticsService.isEffectivelySupported()) {
         this.updateHapticsBadgeState('active');
       }
     } else {
       iconEl.innerHTML = this.playIconHTML;
       this.playPauseBtn.setAttribute('aria-label', 'Play');
       this.stopSyncLoop();
-      if (this.hapticsService?.isEffectivelySupported) {
-        this.hapticsService.stop();
+      if (HapticsService.isEffectivelySupported()) {
+        this.cancelHaptics();
         this.updateHapticsBadgeState('paused');
       }
     }
@@ -242,7 +255,7 @@ export class PlayerPage implements PageController {
 
   private startSyncLoop() {
     if (this.timeUpdateRaf !== null) return;
-    
+
     const loop = () => {
       if (!this.isSeeking && this.ytPlayer) {
         const time = this.ytPlayer.getCurrentTime();
@@ -266,7 +279,6 @@ export class PlayerPage implements PageController {
     const iframeWindow = (this.container.querySelector('#yt-player-frame') as HTMLIFrameElement)?.contentWindow;
 
     if (isIOS && iframeWindow) {
-      // iOS specific hook
       iframeWindow.postMessage(JSON.stringify({ event: 'command', func: 'requestFullscreen' }), '*');
     } else {
       const playerContainer = this.container.querySelector('#player-container') as HTMLElement;
