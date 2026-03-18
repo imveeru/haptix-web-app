@@ -1,4 +1,4 @@
-import { WebHaptics } from 'web-haptics';
+import { WebHaptics, Vibration } from 'web-haptics';
 import { HapticsServiceOptions } from '../types';
 
 interface InternalEvent {
@@ -9,12 +9,11 @@ interface InternalEvent {
 }
 
 export class HapticsService {
-  private haptics: WebHaptics | null = null;
   private events: InternalEvent[] = [];
+  private haptics: WebHaptics | null = null;
 
   constructor(options: HapticsServiceOptions) {
     let absoluteMs = 0;
-    this.events = [];
 
     for (let i = 0; i < options.pattern.events.length; i++) {
       const step = options.pattern.events[i];
@@ -33,8 +32,6 @@ export class HapticsService {
       });
       absoluteMs += step.duration;
     }
-
-    this.haptics = new WebHaptics();
   }
 
   get isNativelySupported(): boolean {
@@ -50,8 +47,8 @@ export class HapticsService {
   }
 
   start(getCurrentTime: () => number): void {
-    if (!this.haptics) return;
-    this.haptics.cancel();
+    // Cancel any in-progress haptics
+    this.haptics?.cancel();
 
     const currentTime = getCurrentTime();
 
@@ -59,12 +56,12 @@ export class HapticsService {
     const startIndex = this.events.findIndex(e => e.time + e.duration / 1000 > currentTime);
     if (startIndex === -1) return;
 
-    const pattern: any[] = [];
+    const pattern: Vibration[] = [];
     const first = this.events[startIndex];
     const msUntilFirst = (first.time - currentTime) * 1000;
 
     if (msUntilFirst > 0) {
-      // Event is still in the future
+      // Event is in the future — delay until it starts
       pattern.push({ delay: msUntilFirst, duration: first.duration, intensity: first.intensity });
     } else {
       // We're mid-event — play the remaining portion
@@ -77,6 +74,10 @@ export class HapticsService {
       pattern.push({ delay: ev.delay, duration: ev.duration, intensity: ev.intensity });
     }
 
+    console.log('[Haptics] Final pattern:', JSON.stringify(pattern));
+
+    // Create a fresh instance and trigger once — same approach as Test Haptics
+    this.haptics = new WebHaptics();
     this.haptics.trigger(pattern);
   }
 
