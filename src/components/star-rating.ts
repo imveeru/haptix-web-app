@@ -41,9 +41,9 @@ export class StarRating {
       svg.setAttribute('aria-hidden', 'true');
       svg.classList.add('star-icon', 'empty');
 
-      const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-      use.setAttribute('href', '#icon-star-empty');
-      svg.appendChild(use);
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z');
+      svg.appendChild(path);
       btn.appendChild(svg);
 
       btn.addEventListener('click', () => {
@@ -60,12 +60,14 @@ export class StarRating {
   }
 
   private updateStars() {
+    const STAR_FILLED = 'M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
+    const STAR_EMPTY = 'M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z';
     this.element.querySelectorAll<HTMLButtonElement>('.star-button').forEach((btn) => {
       const starNum = Number(btn.dataset.star);
       const isFilled = starNum <= this.currentRating;
       const svg = btn.querySelector('svg')!;
-      const use = btn.querySelector('use') as SVGUseElement;
-      use.setAttribute('href', isFilled ? '#icon-star-filled' : '#icon-star-empty');
+      const path = btn.querySelector('path') as SVGPathElement;
+      path.setAttribute('d', isFilled ? STAR_FILLED : STAR_EMPTY);
       svg.classList.toggle('filled', isFilled);
       svg.classList.toggle('empty', !isFilled);
       btn.setAttribute('aria-checked', isFilled ? 'true' : 'false');

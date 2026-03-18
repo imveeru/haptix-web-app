@@ -27,7 +27,7 @@ export class PlayerPage implements PageController {
   private timeUpdateRaf: number | null = null;
 
   private playPauseBtn!: HTMLButtonElement;
-  private playPauseUse!: SVGUseElement;
+  private playPausePath!: SVGPathElement;
   private timeDisplay!: HTMLElement;
   private seekBar!: HTMLInputElement;
   private hapticsBadge!: HTMLElement;
@@ -73,7 +73,7 @@ export class PlayerPage implements PageController {
       <div class="player-page">
         <header class="player-header">
           <button class="back-button" aria-label="Go back" id="back-btn">
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><use href="#icon-back"></use></svg>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
           </button>
           <h2 class="player-title" id="player-title"></h2>
         </header>
@@ -82,18 +82,18 @@ export class PlayerPage implements PageController {
         </div>
         <div class="player-controls">
           <div class="haptics-badge" id="haptics-badge" role="status" aria-live="polite">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-haptics"></use></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12V8m4 4v-2m4 6V6m4 6v-3m4 3v-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             <span id="haptics-badge-text">...</span>
           </div>
           <div class="controls-row">
             <button class="play-pause-btn" aria-label="Play" id="play-pause-btn">
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><use href="#icon-play" id="play-pause-use"></use></svg>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path id="play-pause-path" d="M8 5v14l11-7z"/></svg>
             </button>
             <div class="seek-container">
               <span class="time-display" id="time-display">0:00</span>
               <input type="range" id="seek-bar" value="0" step="0.1" aria-label="Seek video">
               <button class="fullscreen-btn" aria-label="Fullscreen" id="fullscreen-btn">
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><use href="#icon-fullscreen"></use></svg>
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
               </button>
             </div>
           </div>
@@ -102,7 +102,7 @@ export class PlayerPage implements PageController {
 
     (this.container.querySelector('#player-title') as HTMLElement).textContent = title;
     this.playPauseBtn = this.container.querySelector('#play-pause-btn') as HTMLButtonElement;
-    this.playPauseUse = this.container.querySelector('#play-pause-use') as SVGUseElement;
+    this.playPausePath = this.container.querySelector('#play-pause-path') as SVGPathElement;
     this.timeDisplay = this.container.querySelector('#time-display') as HTMLElement;
     this.seekBar = this.container.querySelector('#seek-bar') as HTMLInputElement;
     this.hapticsBadge = this.container.querySelector('#haptics-badge') as HTMLElement;
@@ -193,14 +193,14 @@ export class PlayerPage implements PageController {
 
   private onPlayerStateChange(state: number) {
     if (state === YT_PLAYER_STATE.PLAYING) {
-      this.playPauseUse.setAttribute('href', '#icon-pause');
+      this.playPausePath.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z');
       this.playPauseBtn.setAttribute('aria-label', 'Pause');
       this.startSyncLoop();
       if (HapticsService.isEffectivelySupported()) {
         this.updateHapticsBadgeState('active');
       }
     } else {
-      this.playPauseUse.setAttribute('href', '#icon-play');
+      this.playPausePath.setAttribute('d', 'M8 5v14l11-7z');
       this.playPauseBtn.setAttribute('aria-label', 'Play');
       this.stopSyncLoop();
       if (HapticsService.isEffectivelySupported()) {
