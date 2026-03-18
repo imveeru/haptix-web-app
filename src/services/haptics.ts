@@ -1,34 +1,40 @@
-import { WebHaptics, Vibration } from 'web-haptics';
+import { WebHaptics } from 'web-haptics';
 import { HapticsServiceOptions } from '../types';
 
 interface InternalEvent {
   time: number;       // absolute seconds from video start
+  delay: number;      // ms from previous event
   duration: number;   // ms
   intensity: number;  // 0-1
 }
 
 export class HapticsService {
   private haptics: WebHaptics | null = null;
-  private rafId: number | null = null;
   private events: InternalEvent[] = [];
-  private eventIndex: number = 0;
 
   constructor(options: HapticsServiceOptions) {
-    // Convert relative-delay format to absolute times
     let absoluteMs = 0;
-    this.events = options.pattern.events.map((step) => {
-      absoluteMs += (step.delay ?? 0);
-      const event: InternalEvent = {
+    this.events = [];
+    
+    // Parse the events to absolute times
+    for (let i = 0; i < options.pattern.events.length; i++) {
+      const step = options.pattern.events[i];
+      // Skip the dummy 0/1 duration event we added at the start of JSON (if it has no delay)
+      if (i === 0 && (step.delay === undefined || step.delay === null) && step.duration <= 1) {
+        continue;
+      }
+      
+      const delay = step.delay ?? 0;
+      absoluteMs += delay;
+      this.events.push({
         time: absoluteMs / 1000,
+        delay: delay,
         duration: step.duration,
-        intensity: step.intensity,
-      };
+        intensity: step.intensity ?? 1,
+      });
       absoluteMs += step.duration;
-      return event;
-    });
+    }
 
-    // web-haptics provides an iOS fallback hack when navigator.vibrate is absent,
-    // so we should always instantiate it.
     this.haptics = new WebHaptics();
   }
 
@@ -49,22 +55,54 @@ export class HapticsService {
   }
 
   start(getCurrentTime: () => number): void {
-    if (!this.isSupported) return;
-    if (this.rafId !== null) return;
-
-    const loop = () => {
-      const currentTime = getCurrentTime();
-      this.checkTriggers(currentTime);
-      this.rafId = requestAnimationFrame(loop);
-    };
-    this.rafId = requestAnimationFrame(loop);
+    if (!this.haptics) return;
+    
+    // Stop any currently playing sequence
+    this.haptics.cancel();
+    
+    const currentTime = getCurrentTime();
+    
+    // Find the first event that hasn't finished yet
+    const index = this.events.findIndex(e => e.time + (e.duration / 1000) > currentTime);
+    
+    if (index === -1) return; // All events are in the past
+    
+    const pattern: any[] = [];
+    const currentEvent = this.events[index];
+    const timeUntilEventMs = (currentEvent.time - currentTime) * 1000;
+    
+    if (timeUntilEventMs > 0) {
+      // Event is in the future, we need an initial padded delay.
+      // web-haptics requires the first array element to be a Vibration (no delay).
+      pattern.push({ duration: 1, intensity: 0 }); // Dummy initial vibration
+      pattern.push({
+        delay: timeUntilEventMs,
+        duration: currentEvent.duration,
+        intensity: currentEvent.intensity
+      });
+    } else {
+      // Event is currently overlapping with our current time
+      const remainingDuration = (currentEvent.time + (currentEvent.duration / 1000) - currentTime) * 1000;
+      pattern.push({
+        duration: Math.max(1, remainingDuration),
+        intensity: currentEvent.intensity
+      });
+    }
+    
+    // Append the rest of the sequence
+    for (let i = index + 1; i < this.events.length; i++) {
+       const ev = this.events[i];
+       pattern.push({
+         delay: ev.delay,
+         duration: ev.duration,
+         intensity: ev.intensity
+       });
+    }
+    
+    this.haptics.trigger(pattern);
   }
 
   pause(): void {
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-    }
     if (this.haptics) {
       this.haptics.cancel();
     }
@@ -72,39 +110,11 @@ export class HapticsService {
 
   stop(): void {
     this.pause();
-    this.eventIndex = 0;
   }
 
-  seek(time: number): void {
-    this.eventIndex = this.events.findIndex(e => e.time >= time);
-    if (this.eventIndex === -1) {
-      this.eventIndex = this.events.length;
-    }
+  seek(_time: number): void {
     if (this.haptics) {
       this.haptics.cancel();
-    }
-  }
-
-  private checkTriggers(currentTime: number): void {
-    if (!this.haptics) return;
-
-    while (this.eventIndex < this.events.length) {
-      const event = this.events[this.eventIndex];
-      // Fire if current time is at or past the event time
-      if (currentTime >= event.time) {
-        // Only trigger if we haven't skipped past it by too much tracking distance (e.g. 0.1s lag spike)
-        if (currentTime <= event.time + 0.1) {
-          const vibration: Vibration = {
-            duration: event.duration,
-            intensity: event.intensity
-          };
-          this.haptics.trigger([vibration]);
-        }
-        this.eventIndex++;
-      } else {
-        // Event is still in the future
-        break;
-      }
     }
   }
 }

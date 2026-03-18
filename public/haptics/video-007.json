@@ -3,6 +3,10 @@
   "totalDuration": 130.283,
   "events": [
     {
+      "duration": 1,
+      "intensity": 0
+    },
+    {
       "delay": 5000,
       "duration": 292,
       "intensity": 0.87
