@@ -2,6 +2,7 @@ import { PageController, Router } from '../router';
 import { RouteParams, YTPlayer, YT_PLAYER_STATE, HapticPattern } from '../types';
 import { YouTubeService } from '../services/youtube';
 import { HapticsService } from '../services/haptics';
+import { toastInstance } from '../components/toast';
 import videosData from '../data/videos.json';
 import hapticsMapData from '../data/haptics-map.json';
 
@@ -163,6 +164,7 @@ export class PlayerPage implements PageController {
     const entry = hapticsMapData.entries.find(e => e.videoId === videoId);
     if (!entry) {
       this.hapticsBadge.style.display = 'none';
+      toastInstance.show('No haptics available for this video');
       return;
     }
 
@@ -183,6 +185,7 @@ export class PlayerPage implements PageController {
 
       if (!this.hapticsService.isEffectivelySupported) {
         this.updateHapticsBadgeState('unsupported');
+        toastInstance.show('Web Haptics are not supported on this device', 4000);
       } else {
         this.updateHapticsBadgeState('paused');
       }
@@ -203,6 +206,7 @@ export class PlayerPage implements PageController {
       if (this.hapticsService?.isEffectivelySupported) {
         this.hapticsService.start(() => this.ytPlayer!.getCurrentTime());
         this.updateHapticsBadgeState('active');
+        toastInstance.show('Haptics Playing', 2000);
       }
     } else {
       iconEl.innerHTML = this.playIconHTML;
@@ -211,6 +215,9 @@ export class PlayerPage implements PageController {
       if (this.hapticsService?.isEffectivelySupported) {
         this.hapticsService.pause();
         this.updateHapticsBadgeState('paused');
+        if (state === YT_PLAYER_STATE.PAUSED) {
+          toastInstance.show('Haptics Paused', 2000);
+        }
       }
     }
 
