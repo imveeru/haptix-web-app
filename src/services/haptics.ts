@@ -74,7 +74,7 @@ export class HapticsService {
       pattern.push({ delay: ev.delay, duration: ev.duration, intensity: ev.intensity });
     }
 
-    console.log('[Haptics] Final pattern:', JSON.stringify(pattern));
+    console.log('[Haptics] Final pattern:', pattern);
 
     // Create a fresh instance and trigger once — same approach as Test Haptics
     this.haptics = new WebHaptics();
