@@ -35,6 +35,12 @@ export class PlayerPage implements PageController {
 
 
   private isSeeking = false;
+  private timelineCanvas: HTMLCanvasElement | null = null;
+  private timelineStaticImage: ImageData | null = null;
+  private timelineDomainMs = 0;
+  private timelineCssWidth = 0;
+  private lastKnownVideoTime = 0;
+  private lastKnownVideoTimestamp = 0;
 
   private static readonly TIMELINE_HEIGHT = 80;
   private static readonly TIMELINE_PAD_TOP = 10;
@@ -159,13 +165,18 @@ export class PlayerPage implements PageController {
 
     this.seekBar.addEventListener('input', () => {
       this.isSeeking = true;
-      this.timeDisplay.textContent = formatTime(parseFloat(this.seekBar.value));
+      const t = parseFloat(this.seekBar.value);
+      this.timeDisplay.textContent = formatTime(t);
+      this.drawTimelinePlayhead(t);
       this.cancelHaptics();
     });
 
     this.seekBar.addEventListener('change', () => {
       if (!this.ytPlayer) return;
-      this.ytPlayer.seekTo(parseFloat(this.seekBar.value), true);
+      const seekTime = parseFloat(this.seekBar.value);
+      this.ytPlayer.seekTo(seekTime, true);
+      this.lastKnownVideoTime = seekTime;
+      this.lastKnownVideoTimestamp = performance.now();
       this.isSeeking = false;
     });
 
@@ -307,6 +318,39 @@ export class PlayerPage implements PageController {
       ctx.textAlign = t === 0 ? 'left' : (t + tickInterval > domainMs ? 'right' : 'center');
       ctx.fillText(label, x, labelY);
     }
+
+    // Cache static drawing and store refs for playhead updates
+    this.timelineCanvas = canvas;
+    this.timelineDomainMs = domainMs;
+    this.timelineCssWidth = cssWidth;
+    this.timelineStaticImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    this.drawTimelinePlayhead(0);
+  }
+
+  private drawTimelinePlayhead(currentSec: number): void {
+    if (!this.timelineCanvas || !this.timelineStaticImage || this.timelineDomainMs === 0) return;
+    const ctx = this.timelineCanvas.getContext('2d')!;
+    ctx.putImageData(this.timelineStaticImage, 0, 0);
+
+    const progress = Math.min(currentSec * 1000 / this.timelineDomainMs, 1);
+    const x = progress * this.timelineCssWidth;
+    const padTop = PlayerPage.TIMELINE_PAD_TOP;
+    const trackH = PlayerPage.TIMELINE_HEIGHT - padTop - PlayerPage.TIMELINE_PAD_BTM;
+
+    ctx.save();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(x, padTop - 4);
+    ctx.lineTo(x, padTop + trackH + 4);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(x, padTop - 4, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   private drawRoundedRect(
@@ -370,9 +414,16 @@ export class PlayerPage implements PageController {
     if (this.timeUpdateRaf !== null) return;
     const loop = () => {
       if (!this.isSeeking && this.ytPlayer) {
-        const time = this.ytPlayer.getCurrentTime();
+        const rawTime = this.ytPlayer.getCurrentTime();
+        const now = performance.now();
+        if (rawTime !== this.lastKnownVideoTime) {
+          this.lastKnownVideoTime = rawTime;
+          this.lastKnownVideoTimestamp = now;
+        }
+        const time = this.lastKnownVideoTime + (now - this.lastKnownVideoTimestamp) / 1000;
         this.seekBar.value = time.toString();
         this.timeDisplay.textContent = formatTime(time);
+        this.drawTimelinePlayhead(time);
       }
       this.timeUpdateRaf = requestAnimationFrame(loop);
     };
