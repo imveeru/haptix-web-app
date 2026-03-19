@@ -28,6 +28,8 @@ export class PlayerPage implements PageController {
 
   private playPauseBtn!: HTMLButtonElement;
   private playPausePath!: SVGPathElement;
+  private muteBtn!: HTMLButtonElement;
+  private mutePath!: SVGPathElement;
   private timeDisplay!: HTMLElement;
   private seekBar!: HTMLInputElement;
   private hapticsBadge!: HTMLElement;
@@ -89,6 +91,9 @@ export class PlayerPage implements PageController {
             <button class="play-pause-btn" aria-label="Play" id="play-pause-btn">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path id="play-pause-path" d="M8 5v14l11-7z"/></svg>
             </button>
+            <button class="mute-btn" aria-label="Mute" id="mute-btn">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path id="mute-path" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </button>
             <div class="seek-container">
               <span class="time-display" id="time-display">0:00</span>
               <input type="range" id="seek-bar" value="0" step="0.1" aria-label="Seek video">
@@ -103,6 +108,8 @@ export class PlayerPage implements PageController {
     (this.container.querySelector('#player-title') as HTMLElement).textContent = title;
     this.playPauseBtn = this.container.querySelector('#play-pause-btn') as HTMLButtonElement;
     this.playPausePath = this.container.querySelector('#play-pause-path') as SVGPathElement;
+    this.muteBtn = this.container.querySelector('#mute-btn') as HTMLButtonElement;
+    this.mutePath = this.container.querySelector('#mute-path') as SVGPathElement;
     this.timeDisplay = this.container.querySelector('#time-display') as HTMLElement;
     this.seekBar = this.container.querySelector('#seek-bar') as HTMLInputElement;
     this.hapticsBadge = this.container.querySelector('#haptics-badge') as HTMLElement;
@@ -117,24 +124,44 @@ export class PlayerPage implements PageController {
       if (!this.ytPlayer) return;
       const state = this.ytPlayer.getPlayerState();
       if (state === YT_PLAYER_STATE.PLAYING) {
+        console.log("VIDEO PLAYING")
         this.cancelHaptics();
         this.ytPlayer.pauseVideo();
       } else {
+        console.log("hapticsService", this.hapticsService);
+        console.log("HapticsService", HapticsService.isEffectivelySupported());
         // Trigger haptics directly here — must be inside a user gesture for Web Audio to work
         if (this.hapticsService && HapticsService.isEffectivelySupported()) {
           const { pattern, initialDelay } = this.hapticsService;
           console.log('[Haptics] Final pattern:', pattern);
-          this.haptics = new WebHaptics();
-          if (initialDelay > 0) {
-            this.hapticsTimeout = setTimeout(() => {
-              this.hapticsTimeout = null;
-              this.haptics?.trigger(pattern);
-            }, initialDelay);
-          } else {
-            this.haptics.trigger(pattern);
-          }
+          this.haptics = new WebHaptics({ debug: true });
+          console.log("HAPTICS STARTED");
+          this.haptics.trigger(pattern);
+          // if (initialDelay > 0) {
+          //   console.log("HAPTICS STARTED with delay");
+          //   this.hapticsTimeout = setTimeout(() => {
+          //     this.hapticsTimeout = null;
+          //     this.haptics?.trigger(pattern);
+          //   }, initialDelay);
+          // } else {
+          //   console.log("HAPTICS STARTED");
+          //   this.haptics.trigger(pattern);
+          // }
         }
         this.ytPlayer.playVideo();
+      }
+    });
+
+    this.muteBtn.addEventListener('click', () => {
+      if (!this.ytPlayer) return;
+      if (this.ytPlayer.isMuted()) {
+        this.ytPlayer.unMute();
+        this.mutePath.setAttribute('d', 'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z');
+        this.muteBtn.setAttribute('aria-label', 'Mute');
+      } else {
+        this.ytPlayer.mute();
+        this.mutePath.setAttribute('d', 'M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z');
+        this.muteBtn.setAttribute('aria-label', 'Unmute');
       }
     });
 

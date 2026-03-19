@@ -68,6 +68,9 @@ export interface YTPlayer {
   getCurrentTime(): number;
   getDuration(): number;
   getPlayerState(): number;
+  mute(): void;
+  unMute(): void;
+  isMuted(): boolean;
   destroy(): void;
 }
 

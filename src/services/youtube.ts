@@ -42,7 +42,7 @@ export class YouTubeService {
       this.player = new window.YT.Player(elementId, {
         videoId,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           controls: 0,
           modestbranding: 1,
           rel: 0,

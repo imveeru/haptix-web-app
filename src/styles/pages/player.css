@@ -109,7 +109,7 @@
   margin-top: var(--space-2);
 }
 
-.play-pause-btn, .fullscreen-btn {
+.play-pause-btn, .mute-btn, .fullscreen-btn {
   width: 44px;
   height: 44px;
   display: flex;
@@ -118,7 +118,7 @@
   color: var(--color-primary-label);
 }
 
-.play-pause-btn svg, .fullscreen-btn svg {
+.play-pause-btn svg, .mute-btn svg, .fullscreen-btn svg {
   width: 28px;
   height: 28px;
 }
