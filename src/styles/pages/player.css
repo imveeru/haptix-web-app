@@ -169,3 +169,16 @@ input[type=range]::-webkit-slider-runnable-track {
 input[type=range]:focus {
   outline: none;
 }
+
+/* ── Haptics Timeline ────────────────────────────────────────────── */
+
+.haptics-timeline-wrapper {
+  margin: 0 var(--content-margin) var(--space-4);
+}
+
+.haptics-timeline-canvas {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-fill-secondary);
+}

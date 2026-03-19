@@ -7,14 +7,29 @@
       "intensity": 0
     },
     {
+      "delay": 325,
+      "duration": 80,
+      "intensity": 0.99
+    },
+    {
+      "delay": 500,
+      "duration": 11,
+      "intensity": 0.84
+    },
+    {
+      "delay": 2405,
+      "duration": 102,
+      "intensity": 0.69
+    },
+    {
       "delay": 5000,
       "duration": 121,
       "intensity": 0.79
     },
     {
       "delay": 4879,
-      "duration": 491,
-      "intensity": 0.41
+      "duration": 1200,
+      "intensity": 1
     },
     {
       "delay": 4509,

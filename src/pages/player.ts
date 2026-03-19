@@ -2,8 +2,8 @@ import { PageController, Router } from '../router';
 import { RouteParams, YTPlayer, YT_PLAYER_STATE, HapticPattern } from '../types';
 import { YouTubeService } from '../services/youtube';
 import { HapticsService } from '../services/haptics';
-import { WebHaptics } from 'web-haptics';
 import { toastInstance } from '../components/toast';
+import { getOrCreateHapticsInstance, destroyHapticsInstance } from '../services/haptics-instance';
 import videosData from '../data/videos.json';
 import hapticsMapData from '../data/haptics-map.json';
 
@@ -22,7 +22,6 @@ export class PlayerPage implements PageController {
   private router: Router;
   private ytPlayer: YTPlayer | null = null;
   private hapticsService: HapticsService | null = null;
-  private haptics: WebHaptics | null = null;
   private hapticsTimeout: ReturnType<typeof setTimeout> | null = null;
   private timeUpdateRaf: number | null = null;
 
@@ -34,7 +33,13 @@ export class PlayerPage implements PageController {
   private seekBar!: HTMLInputElement;
   private hapticsBadge!: HTMLElement;
 
+
   private isSeeking = false;
+
+  private static readonly TIMELINE_HEIGHT    = 80;
+  private static readonly TIMELINE_PAD_TOP   = 10;
+  private static readonly TIMELINE_PAD_BTM   = 22;
+  private static readonly TIMELINE_BAR_MIN_W = 3;
 
   constructor(router: Router) {
     this.router = router;
@@ -66,6 +71,7 @@ export class PlayerPage implements PageController {
   unmount(): void {
     if (this.timeUpdateRaf !== null) cancelAnimationFrame(this.timeUpdateRaf);
     this.cancelHaptics();
+    destroyHapticsInstance();
     ytService.destroy();
     this.container.replaceChildren();
   }
@@ -103,6 +109,9 @@ export class PlayerPage implements PageController {
             </div>
           </div>
         </div>
+        <div class="haptics-timeline-wrapper" id="haptics-timeline-wrapper" hidden>
+          <canvas id="haptics-timeline-canvas" class="haptics-timeline-canvas" aria-hidden="true"></canvas>
+        </div>
       </div>`;
 
     (this.container.querySelector('#player-title') as HTMLElement).textContent = title;
@@ -124,31 +133,12 @@ export class PlayerPage implements PageController {
       if (!this.ytPlayer) return;
       const state = this.ytPlayer.getPlayerState();
       if (state === YT_PLAYER_STATE.PLAYING) {
-        console.log("VIDEO PLAYING")
         this.cancelHaptics();
         this.ytPlayer.pauseVideo();
       } else {
-        console.log("hapticsService", this.hapticsService);
-        console.log("HapticsService", HapticsService.isEffectivelySupported());
-        // Trigger haptics directly here — must be inside a user gesture for Web Audio to work
         if (this.hapticsService && HapticsService.isEffectivelySupported()) {
-          const { pattern, initialDelay } = this.hapticsService;
-          console.log('[Haptics] Final pattern:', pattern);
-          // this.haptics = new WebHaptics({ debug: true });
-          this.haptics = new WebHaptics();
-          console.log(initialDelay)
-          console.log("HAPTICS STARTED");
-          this.haptics.trigger(pattern);
-          // if (initialDelay > 0) {
-          //   console.log("HAPTICS STARTED with delay");
-          //   this.hapticsTimeout = setTimeout(() => {
-          //     this.hapticsTimeout = null;
-          //     this.haptics?.trigger(pattern);
-          //   }, initialDelay);
-          // } else {
-          //   console.log("HAPTICS STARTED");
-          //   this.haptics.trigger(pattern);
-          // }
+          const haptics = getOrCreateHapticsInstance();
+          haptics.trigger(this.hapticsService.pattern);
         }
         this.ytPlayer.playVideo();
       }
@@ -189,7 +179,7 @@ export class PlayerPage implements PageController {
       clearTimeout(this.hapticsTimeout);
       this.hapticsTimeout = null;
     }
-    this.haptics?.cancel();
+    getOrCreateHapticsInstance().cancel();
   }
 
   private async setupHaptics(videoId: string) {
@@ -214,10 +204,140 @@ export class PlayerPage implements PageController {
       } else {
         this.updateHapticsBadgeState('paused');
       }
+
+      this.renderHapticsTimeline(pattern);
     } catch (e: any) {
       console.warn('Could not load haptics file:', e.message || e);
       this.hapticsBadge.style.display = 'none';
     }
+  }
+
+  private renderHapticsTimeline(pattern: HapticPattern): void {
+    const wrapper = this.container.querySelector('#haptics-timeline-wrapper') as HTMLElement;
+    const canvas  = this.container.querySelector('#haptics-timeline-canvas')  as HTMLCanvasElement;
+    if (!wrapper || !canvas) return;
+
+    // Compute absolute start/end times from cumulative delay
+    interface TimelineEvent { startMs: number; endMs: number; intensity: number; }
+    const timelineEvents: TimelineEvent[] = [];
+    let cursor = 0;
+    for (let i = 0; i < pattern.events.length; i++) {
+      const ev = pattern.events[i];
+      if (i === 0 && !ev.delay && ev.duration <= 1) continue; // skip dummy
+      cursor += ev.delay ?? 0;
+      const startMs = cursor;
+      const endMs   = startMs + ev.duration;
+      cursor = endMs;
+      timelineEvents.push({ startMs, endMs, intensity: ev.intensity });
+    }
+    if (timelineEvents.length === 0) return;
+
+    const totalMs   = pattern.totalDuration * 1000;
+    const lastEndMs = timelineEvents[timelineEvents.length - 1].endMs;
+    const domainMs  = Math.max(totalMs, lastEndMs);
+
+    // Reveal wrapper so getBoundingClientRect returns a real width
+    wrapper.removeAttribute('hidden');
+    const cssWidth = canvas.getBoundingClientRect().width;
+    if (cssWidth === 0) return;
+
+    const dpr      = window.devicePixelRatio || 1;
+    const cssHeight = PlayerPage.TIMELINE_HEIGHT;
+    canvas.width        = Math.round(cssWidth  * dpr);
+    canvas.height       = Math.round(cssHeight * dpr);
+    canvas.style.height = cssHeight + 'px';
+
+    const ctx = canvas.getContext('2d')!;
+    ctx.scale(dpr, dpr);
+
+    // Resolve CSS color tokens
+    const cs             = getComputedStyle(canvas);
+    const colorAccent    = cs.getPropertyValue('--color-accent').trim()          || '#007AFF';
+    const colorFillSec   = cs.getPropertyValue('--color-fill-secondary').trim()  || 'rgba(120,120,128,0.12)';
+    const colorSecLabel  = cs.getPropertyValue('--color-secondary-label').trim() || 'rgba(60,60,67,0.6)';
+    const colorSeparator = cs.getPropertyValue('--color-separator').trim()       || 'rgba(60,60,67,0.29)';
+
+    const padTop  = PlayerPage.TIMELINE_PAD_TOP;
+    const padBtm  = PlayerPage.TIMELINE_PAD_BTM;
+    const trackH  = cssHeight - padTop - padBtm;
+    const centerY = padTop + trackH / 2;
+    const maxHalf = trackH / 2 - 2;
+
+    // Background
+    ctx.fillStyle = colorFillSec;
+    this.drawRoundedRect(ctx, 0, padTop - 4, cssWidth, trackH + 8, 8);
+    ctx.fill();
+
+    // Dashed center line
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = colorSeparator;
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(cssWidth, centerY);
+    ctx.stroke();
+    ctx.restore();
+
+    // Event bars
+    ctx.fillStyle = colorAccent;
+    for (const ev of timelineEvents) {
+      const xStart   = (ev.startMs / domainMs) * cssWidth;
+      const xEnd     = (ev.endMs   / domainMs) * cssWidth;
+      const barWidth = Math.max(xEnd - xStart, PlayerPage.TIMELINE_BAR_MIN_W);
+      const halfH    = Math.max(maxHalf * ev.intensity, 2);
+      ctx.beginPath();
+      this.drawRoundedRect(ctx, xStart, centerY - halfH, barWidth, halfH * 2, halfH);
+      ctx.fill();
+    }
+
+    // X-axis ticks and labels
+    const tickInterval = this.pickTickInterval(domainMs);
+    const tickTop      = padTop + trackH + 6;
+    const tickBottom   = tickTop + 4;
+    const labelY       = cssHeight - 4;
+    ctx.strokeStyle  = colorSeparator;
+    ctx.lineWidth    = 1;
+    ctx.fillStyle    = colorSecLabel;
+    ctx.font         = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textBaseline = 'alphabetic';
+    for (let t = 0; t <= domainMs; t += tickInterval) {
+      const x = (t / domainMs) * cssWidth;
+      ctx.beginPath();
+      ctx.moveTo(x, tickTop);
+      ctx.lineTo(x, tickBottom);
+      ctx.stroke();
+      const label = this.formatTickLabel(t, tickInterval);
+      ctx.textAlign = t === 0 ? 'left' : (t + tickInterval > domainMs ? 'right' : 'center');
+      ctx.fillText(label, x, labelY);
+    }
+  }
+
+  private drawRoundedRect(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, w: number, h: number, r: number
+  ): void {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y,     x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x,     y + h, r);
+    ctx.arcTo(x,     y + h, x,     y,     r);
+    ctx.arcTo(x,     y,     x + w, y,     r);
+    ctx.closePath();
+  }
+
+  private pickTickInterval(domainMs: number): number {
+    const candidates = [100, 250, 500, 1000, 2000, 5000, 10000, 30000, 60000];
+    for (const iv of candidates) {
+      if (domainMs / iv <= 8) return iv;
+    }
+    return 60000;
+  }
+
+  private formatTickLabel(ms: number, intervalMs: number): string {
+    return intervalMs >= 1000 ? `${ms / 1000}s` : `${ms}ms`;
   }
 
   private onPlayerStateChange(state: number) {
