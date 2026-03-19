@@ -3,6 +3,7 @@ import { RouteParams, YTPlayer, YT_PLAYER_STATE, HapticPattern } from '../types'
 import { YouTubeService } from '../services/youtube';
 import { HapticsService } from '../services/haptics';
 import { toastInstance } from '../components/toast';
+import { WebHaptics } from 'web-haptics';
 import { getOrCreateHapticsInstance, destroyHapticsInstance } from '../services/haptics-instance';
 import videosData from '../data/videos.json';
 import hapticsMapData from '../data/haptics-map.json';
@@ -22,7 +23,6 @@ export class PlayerPage implements PageController {
   private router: Router;
   private ytPlayer: YTPlayer | null = null;
   private hapticsService: HapticsService | null = null;
-  private hapticsTimeout: ReturnType<typeof setTimeout> | null = null;
   private timeUpdateRaf: number | null = null;
 
   private playPauseBtn!: HTMLButtonElement;
@@ -36,9 +36,9 @@ export class PlayerPage implements PageController {
 
   private isSeeking = false;
 
-  private static readonly TIMELINE_HEIGHT    = 80;
-  private static readonly TIMELINE_PAD_TOP   = 10;
-  private static readonly TIMELINE_PAD_BTM   = 22;
+  private static readonly TIMELINE_HEIGHT = 80;
+  private static readonly TIMELINE_PAD_TOP = 10;
+  private static readonly TIMELINE_PAD_BTM = 22;
   private static readonly TIMELINE_BAR_MIN_W = 3;
 
   constructor(router: Router) {
@@ -137,8 +137,8 @@ export class PlayerPage implements PageController {
         this.ytPlayer.pauseVideo();
       } else {
         if (this.hapticsService && HapticsService.isEffectivelySupported()) {
-          const haptics = getOrCreateHapticsInstance();
-          haptics.trigger(this.hapticsService.pattern);
+          const newHaptics = new WebHaptics({ debug: false });
+          newHaptics.trigger(this.hapticsService.pattern);
         }
         this.ytPlayer.playVideo();
       }
@@ -175,10 +175,6 @@ export class PlayerPage implements PageController {
   }
 
   private cancelHaptics() {
-    if (this.hapticsTimeout !== null) {
-      clearTimeout(this.hapticsTimeout);
-      this.hapticsTimeout = null;
-    }
     getOrCreateHapticsInstance().cancel();
   }
 
@@ -214,7 +210,7 @@ export class PlayerPage implements PageController {
 
   private renderHapticsTimeline(pattern: HapticPattern): void {
     const wrapper = this.container.querySelector('#haptics-timeline-wrapper') as HTMLElement;
-    const canvas  = this.container.querySelector('#haptics-timeline-canvas')  as HTMLCanvasElement;
+    const canvas = this.container.querySelector('#haptics-timeline-canvas') as HTMLCanvasElement;
     if (!wrapper || !canvas) return;
 
     // Compute absolute start/end times from cumulative delay
@@ -226,40 +222,40 @@ export class PlayerPage implements PageController {
       if (i === 0 && !ev.delay && ev.duration <= 1) continue; // skip dummy
       cursor += ev.delay ?? 0;
       const startMs = cursor;
-      const endMs   = startMs + ev.duration;
+      const endMs = startMs + ev.duration;
       cursor = endMs;
       timelineEvents.push({ startMs, endMs, intensity: ev.intensity });
     }
     if (timelineEvents.length === 0) return;
 
-    const totalMs   = pattern.totalDuration * 1000;
+    const totalMs = pattern.totalDuration * 1000;
     const lastEndMs = timelineEvents[timelineEvents.length - 1].endMs;
-    const domainMs  = Math.max(totalMs, lastEndMs);
+    const domainMs = Math.max(totalMs, lastEndMs);
 
     // Reveal wrapper so getBoundingClientRect returns a real width
     wrapper.removeAttribute('hidden');
     const cssWidth = canvas.getBoundingClientRect().width;
     if (cssWidth === 0) return;
 
-    const dpr      = window.devicePixelRatio || 1;
+    const dpr = window.devicePixelRatio || 1;
     const cssHeight = PlayerPage.TIMELINE_HEIGHT;
-    canvas.width        = Math.round(cssWidth  * dpr);
-    canvas.height       = Math.round(cssHeight * dpr);
+    canvas.width = Math.round(cssWidth * dpr);
+    canvas.height = Math.round(cssHeight * dpr);
     canvas.style.height = cssHeight + 'px';
 
     const ctx = canvas.getContext('2d')!;
     ctx.scale(dpr, dpr);
 
     // Resolve CSS color tokens
-    const cs             = getComputedStyle(canvas);
-    const colorAccent    = cs.getPropertyValue('--color-accent').trim()          || '#007AFF';
-    const colorFillSec   = cs.getPropertyValue('--color-fill-secondary').trim()  || 'rgba(120,120,128,0.12)';
-    const colorSecLabel  = cs.getPropertyValue('--color-secondary-label').trim() || 'rgba(60,60,67,0.6)';
-    const colorSeparator = cs.getPropertyValue('--color-separator').trim()       || 'rgba(60,60,67,0.29)';
+    const cs = getComputedStyle(canvas);
+    const colorAccent = cs.getPropertyValue('--color-accent').trim() || '#007AFF';
+    const colorFillSec = cs.getPropertyValue('--color-fill-secondary').trim() || 'rgba(120,120,128,0.12)';
+    const colorSecLabel = cs.getPropertyValue('--color-secondary-label').trim() || 'rgba(60,60,67,0.6)';
+    const colorSeparator = cs.getPropertyValue('--color-separator').trim() || 'rgba(60,60,67,0.29)';
 
-    const padTop  = PlayerPage.TIMELINE_PAD_TOP;
-    const padBtm  = PlayerPage.TIMELINE_PAD_BTM;
-    const trackH  = cssHeight - padTop - padBtm;
+    const padTop = PlayerPage.TIMELINE_PAD_TOP;
+    const padBtm = PlayerPage.TIMELINE_PAD_BTM;
+    const trackH = cssHeight - padTop - padBtm;
     const centerY = padTop + trackH / 2;
     const maxHalf = trackH / 2 - 2;
 
@@ -272,7 +268,7 @@ export class PlayerPage implements PageController {
     ctx.save();
     ctx.setLineDash([4, 4]);
     ctx.strokeStyle = colorSeparator;
-    ctx.lineWidth   = 1;
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, centerY);
     ctx.lineTo(cssWidth, centerY);
@@ -282,10 +278,10 @@ export class PlayerPage implements PageController {
     // Event bars
     ctx.fillStyle = colorAccent;
     for (const ev of timelineEvents) {
-      const xStart   = (ev.startMs / domainMs) * cssWidth;
-      const xEnd     = (ev.endMs   / domainMs) * cssWidth;
+      const xStart = (ev.startMs / domainMs) * cssWidth;
+      const xEnd = (ev.endMs / domainMs) * cssWidth;
       const barWidth = Math.max(xEnd - xStart, PlayerPage.TIMELINE_BAR_MIN_W);
-      const halfH    = Math.max(maxHalf * ev.intensity, 2);
+      const halfH = Math.max(maxHalf * ev.intensity, 2);
       ctx.beginPath();
       this.drawRoundedRect(ctx, xStart, centerY - halfH, barWidth, halfH * 2, halfH);
       ctx.fill();
@@ -293,13 +289,13 @@ export class PlayerPage implements PageController {
 
     // X-axis ticks and labels
     const tickInterval = this.pickTickInterval(domainMs);
-    const tickTop      = padTop + trackH + 6;
-    const tickBottom   = tickTop + 4;
-    const labelY       = cssHeight - 4;
-    ctx.strokeStyle  = colorSeparator;
-    ctx.lineWidth    = 1;
-    ctx.fillStyle    = colorSecLabel;
-    ctx.font         = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+    const tickTop = padTop + trackH + 6;
+    const tickBottom = tickTop + 4;
+    const labelY = cssHeight - 4;
+    ctx.strokeStyle = colorSeparator;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = colorSecLabel;
+    ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textBaseline = 'alphabetic';
     for (let t = 0; t <= domainMs; t += tickInterval) {
       const x = (t / domainMs) * cssWidth;
@@ -321,10 +317,10 @@ export class PlayerPage implements PageController {
     if (h < 2 * r) r = h / 2;
     ctx.beginPath();
     ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y,     x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x,     y + h, r);
-    ctx.arcTo(x,     y + h, x,     y,     r);
-    ctx.arcTo(x,     y,     x + w, y,     r);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
     ctx.closePath();
   }
 
