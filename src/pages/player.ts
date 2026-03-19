@@ -135,6 +135,7 @@ export class PlayerPage implements PageController {
           const { pattern, initialDelay } = this.hapticsService;
           console.log('[Haptics] Final pattern:', pattern);
           this.haptics = new WebHaptics({ debug: true });
+          console.log(initialDelay)
           console.log("HAPTICS STARTED");
           this.haptics.trigger(pattern);
           // if (initialDelay > 0) {
