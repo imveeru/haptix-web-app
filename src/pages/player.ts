@@ -137,7 +137,7 @@ export class PlayerPage implements PageController {
         this.ytPlayer.pauseVideo();
       } else {
         if (this.hapticsService && HapticsService.isEffectivelySupported()) {
-          const newHaptics = new WebHaptics({ debug: false });
+          const newHaptics = new WebHaptics({ debug: true });
           newHaptics.trigger(this.hapticsService.pattern);
         }
         this.ytPlayer.playVideo();

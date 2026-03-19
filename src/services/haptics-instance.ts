@@ -4,7 +4,7 @@ let _instance: WebHaptics | null = null;
 
 export function getOrCreateHapticsInstance(): WebHaptics {
   if (!_instance) {
-    _instance = new WebHaptics({ debug: false });
+    _instance = new WebHaptics({ debug: true });
   }
   return _instance;
 }
