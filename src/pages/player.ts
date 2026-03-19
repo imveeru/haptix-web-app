@@ -142,11 +142,20 @@ export class PlayerPage implements PageController {
         this.cancelHaptics();
         this.ytPlayer.pauseVideo();
       } else {
-        if (this.hapticsService && HapticsService.isEffectivelySupported()) {
+        this.ytPlayer.playVideo();
+
+        // if (this.hapticsService && HapticsService.isEffectivelySupported()) {
+        //   const newHaptics = new WebHaptics({ debug: true });
+        //   console.log('Triggering haptics', this.hapticsService.pattern);
+        //   newHaptics.trigger(this.hapticsService.pattern);
+        // }
+
+        if (this.hapticsService) {
           const newHaptics = new WebHaptics({ debug: true });
+          console.log('Triggering haptics', this.hapticsService.pattern);
           newHaptics.trigger(this.hapticsService.pattern);
         }
-        this.ytPlayer.playVideo();
+
       }
     });
 
