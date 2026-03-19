@@ -3,10 +3,10 @@ import { RouteParams, YTPlayer, YT_PLAYER_STATE, HapticPattern } from '../types'
 import { YouTubeService } from '../services/youtube';
 import { HapticsService } from '../services/haptics';
 import { toastInstance } from '../components/toast';
-import { WebHaptics } from 'web-haptics';
 import { getOrCreateHapticsInstance, destroyHapticsInstance } from '../services/haptics-instance';
 import videosData from '../data/videos.json';
 import hapticsMapData from '../data/haptics-map.json';
+import { WebHaptics } from 'web-haptics';
 
 // Simple store for YT api instance so we don't duplicate injections
 const ytService = new YouTubeService();
@@ -144,16 +144,11 @@ export class PlayerPage implements PageController {
       } else {
         this.ytPlayer.playVideo();
 
-        // if (this.hapticsService && HapticsService.isEffectivelySupported()) {
-        //   const newHaptics = new WebHaptics({ debug: true });
-        //   console.log('Triggering haptics', this.hapticsService.pattern);
-        //   newHaptics.trigger(this.hapticsService.pattern);
-        // }
-
-        if (this.hapticsService) {
-          const newHaptics = new WebHaptics({ debug: true });
+        if (this.hapticsService && HapticsService.isEffectivelySupported()) {
+          // const haptics = getOrCreateHapticsInstance();
+          const haptics = new WebHaptics({ debug: true });
           console.log('Triggering haptics', this.hapticsService.pattern);
-          newHaptics.trigger(this.hapticsService.pattern);
+          haptics.trigger(this.hapticsService.pattern);
         }
 
       }
