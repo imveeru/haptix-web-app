@@ -129,7 +129,20 @@ export class PlayerPage implements PageController {
       window.history.back();
     });
 
-    this.playPauseBtn.onclick = this.onPlayPauseClick.bind(this);
+    this.playPauseBtn.addEventListener('click', () => {
+      if (!this.ytPlayer) return;
+      const state = this.ytPlayer.getPlayerState();
+      if (state === YT_PLAYER_STATE.PLAYING) {
+        this.cancelHaptics();
+        this.ytPlayer.pauseVideo();
+      } else {
+        if (this.hapticsService && HapticsService.isEffectivelySupported()) {
+          const newHaptics = new WebHaptics({ debug: true });
+          newHaptics.trigger(this.hapticsService.pattern);
+        }
+        this.ytPlayer.playVideo();
+      }
+    });
 
     this.muteBtn.addEventListener('click', () => {
       if (!this.ytPlayer) return;
@@ -159,21 +172,6 @@ export class PlayerPage implements PageController {
     this.container.querySelector('#fullscreen-btn')?.addEventListener('click', () => {
       this.toggleFullscreen();
     });
-  }
-
-  private onPlayPauseClick() {
-    if (!this.ytPlayer) return;
-    const state = this.ytPlayer.getPlayerState();
-    if (state === YT_PLAYER_STATE.PLAYING) {
-      this.cancelHaptics();
-      this.ytPlayer.pauseVideo();
-    } else {
-      if (this.hapticsService && HapticsService.isEffectivelySupported()) {
-        const newHaptics = new WebHaptics({ debug: true });
-        newHaptics.trigger(this.hapticsService.pattern);
-      }
-      this.ytPlayer.playVideo();
-    }
   }
 
   private cancelHaptics() {
