@@ -50,19 +50,25 @@ export class HomePage implements PageController {
       }).getElement());
     });
 
-    this.container.querySelector('#test-haptics-btn')?.addEventListener('click', () => {
-      const haptics = getOrCreateHapticsInstance();
-      haptics.trigger([
-        { duration: 30 },
-        { delay: 60, duration: 40, intensity: 0.6 },
-        { delay: 130, duration: 700, intensity: 1 },
-      ]);
+    const testBtn = this.container.querySelector('#test-haptics-btn') as HTMLButtonElement;
+    if (testBtn) testBtn.onclick = this.onTestHapticsClick.bind(this);
+  }
 
-      if (this.hapticsDestroyTimer !== null) clearTimeout(this.hapticsDestroyTimer);
-      this.hapticsDestroyTimer = setTimeout(() => {
-        this.hapticsDestroyTimer = null;
-        destroyHapticsInstance();
-      }, 15000);
-    });
+  private onTestHapticsClick() {
+    const haptics = getOrCreateHapticsInstance();
+    haptics.trigger([
+      { duration: 30, intensity: 0.1 },
+      { delay: 60, duration: 40, intensity: 0.6 },
+      { delay: 60, duration: 40, intensity: 0.6 },
+      { delay: 60, duration: 40, intensity: 0.6 },
+      { delay: 60, duration: 40, intensity: 0.6 },
+      { delay: 130, duration: 700, intensity: 1 },
+    ]);
+
+    if (this.hapticsDestroyTimer !== null) clearTimeout(this.hapticsDestroyTimer);
+    this.hapticsDestroyTimer = setTimeout(() => {
+      this.hapticsDestroyTimer = null;
+      destroyHapticsInstance();
+    }, 15000);
   }
 }
