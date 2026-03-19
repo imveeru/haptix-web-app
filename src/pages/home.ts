@@ -37,7 +37,7 @@ export class HomePage implements PageController {
 
     this.container.querySelector('#test-haptics-btn')?.addEventListener('click', () => {
       import('web-haptics').then(({ WebHaptics }) => {
-        new WebHaptics({ debug: true }).trigger([
+        new WebHaptics().trigger([
           { "duration": 363, "intensity": 0.99 },
           { "delay": 4637, "duration": 296, "intensity": 0.28 },
           { "delay": 4704, "duration": 515, "intensity": 0.81 },

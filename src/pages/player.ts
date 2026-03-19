@@ -134,7 +134,8 @@ export class PlayerPage implements PageController {
         if (this.hapticsService && HapticsService.isEffectivelySupported()) {
           const { pattern, initialDelay } = this.hapticsService;
           console.log('[Haptics] Final pattern:', pattern);
-          this.haptics = new WebHaptics({ debug: true });
+          // this.haptics = new WebHaptics({ debug: true });
+          this.haptics = new WebHaptics();
           console.log(initialDelay)
           console.log("HAPTICS STARTED");
           this.haptics.trigger(pattern);
